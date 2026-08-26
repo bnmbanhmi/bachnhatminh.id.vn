@@ -1,26 +1,85 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-color: #FDF6F0;
+  --accent-color: #FF7A5C;
+  --accent-hover: #E86547;
+  --accent-light: #FFE8E0;
+  --card-top: #FF9A85;
+  --card-bottom-strip: #FF9A85;
+  --card-body: #FFF1E6;
+  --card-body-hover: #FEEBE0;
+  --text-color: #7A6863;
+  --heading-color: #4A3A35;
+  --muted-color: #BFAAA5;
+  --border-color: #F0DDD1;
+  --border-subtle: #F7EDE6;
+  --badge-bg: #FFE5D9;
+  --badge-text: #B3543D;
+  --code-bg: #F9EBE1;
+  
+  --background: var(--bg-color);
+  --foreground: var(--text-color);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-background: var(--bg-color);
+  --color-foreground: var(--text-color);
+  --color-accent: var(--accent-color);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-light: var(--accent-light);
+  --color-card-top: var(--card-top);
+  --color-card-body: var(--card-body);
+  --color-card-body-hover: var(--card-body-hover);
+  --color-heading: var(--heading-color);
+  --color-muted: var(--muted-color);
+  --color-border-warm: var(--border-color);
+  --color-border-subtle: var(--border-subtle);
+  
+  --font-sans: var(--font-lexend), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-space-grotesk), monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-sans);
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Handwriting SVG Styles */
+.handwriting-svg {
+  width: 200px;
+  height: auto;
+}
+
+.name-path {
+  fill: none;
+  stroke: var(--accent-color);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-color);
+}
+

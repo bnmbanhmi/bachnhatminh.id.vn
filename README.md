@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# bachnhatminh.id.vn
 
-## Getting Started
+Personal Portfolio & Product Design Systems Hub for **Bach Nhat Minh** ([@bnmbanhmi](https://github.com/bnmbanhmi)).
 
-First, run the development server:
+- **Live Domain**: [https://bachnhatminh.id.vn](https://bachnhatminh.id.vn)
+- **Deployment**: Static Export on Cloudflare Pages / Cloudflare Worker Assets
+- **Stack**: Next.js 16 (App Router), TypeScript, Tailwind CSS v4, Lucide Icons
+
+---
+
+## Features
+
+- **Interactive Signature Handwriting Card**: Recreated using multi-stroke SVG path animations with responsive touch/hover triggers.
+- **Nhaminhbach Flagship Case Study**: Deep-dive interactive teardowns on Norman's Gulf of Execution (10% $\rightarrow$ 73% CTA lift), Edward Tufte Data-Ink optimization, and Poka-Yoke ZeroState recovery.
+- **Telemetry-Driven UX**: PostHog HogQL query demonstrations proving funnel deltas.
+- **AI-Legible Design Tokens**: Declarative `DESIGN.md` specification for zero-drift AI component authoring.
+
+---
+
+## Local Development
 
 ```bash
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build static export for Cloudflare
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Cloudflare Deployment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Build output is generated statically into `./out` via `next.config.ts` (`output: 'export'`).
+Deploy to Cloudflare via:
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npx wrangler pages deploy out/ --project-name=bachnhatminh-id-vn
+```
