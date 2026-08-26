@@ -25,7 +25,7 @@ export default function Home() {
                 >
                   nhaminhbach.com
                 </a>
-                <span className="text-[11px] text-[#8C7671] font-mono">2026</span>
+                <span className="text-[11px] text-[#8C7671] font-mono flex-shrink-0 whitespace-nowrap">2026</span>
               </div>
               <div className="text-xs text-[#7A6863]">
                 Solo 0-to-1 project • Grew to ~150 users within 7 days of launch •{" "}
@@ -98,7 +98,7 @@ export default function Home() {
                 >
                   Google Developer Group on Campus – HUST
                 </a>
-                <span className="text-[11px] text-[#8C7671] font-mono">Nov 2022 – Aug 2025</span>
+                <span className="text-[11px] text-[#8C7671] font-mono flex-shrink-0 whitespace-nowrap">Nov 2022 – Aug 2025</span>
               </div>
               <div className="text-xs text-[#7A6863]">
                 Sub-lead, Head of Operations
@@ -123,13 +123,13 @@ export default function Home() {
                 >
                   National Champion — ASEAN Data Science Explorers
                 </a>
-                <span className="text-[11px] text-[#8C7671] font-mono">Oct 2025</span>
+                <span className="text-[11px] text-[#8C7671] font-mono flex-shrink-0 whitespace-nowrap">Oct 2025</span>
               </div>
               <div className="text-xs text-[#7A6863]">
                 ASEAN Foundation & SAP • Regional Finalist
               </div>
               <p className="text-xs text-[#52413D] leading-snug">
-                <strong>SeekWell</strong>: Spatial climate analytics dashboard built with SAP Analytics Cloud and edge computer vision for automated waste classification.
+                <strong>SeekWell</strong>: AI healthcare ecosystem democratizing early skin cancer screening for outdoor workers using Vision Transformers (ViT) and SAP Analytics Cloud UV/climate analytics.
               </p>
             </div>
 
@@ -143,7 +143,7 @@ export default function Home() {
                 >
                   Runner-up — Sáng kiến An toàn Giao thông Việt Nam
                 </a>
-                <span className="text-[11px] text-[#8C7671] font-mono">Nov 2024</span>
+                <span className="text-[11px] text-[#8C7671] font-mono flex-shrink-0 whitespace-nowrap">Nov 2024</span>
               </div>
               <div className="text-xs text-[#7A6863]">
                 Dân trí Newspaper
@@ -166,7 +166,7 @@ export default function Home() {
                 <span className="text-[#3B2C27] font-semibold">
                   Hanoi University of Science and Technology
                 </span>
-                <span className="text-[11px] text-[#8C7671] font-mono">2022 – 2026</span>
+                <span className="text-[11px] text-[#8C7671] font-mono flex-shrink-0 whitespace-nowrap">2022 – 2026</span>
               </div>
               <div className="text-xs text-[#7A6863]">
                 B.S. in Data Science and AI
@@ -181,7 +181,7 @@ export default function Home() {
                 <span className="text-[#3B2C27] font-semibold">
                   Hanoi – Amsterdam High School for the Gifted
                 </span>
-                <span className="text-[11px] text-[#8C7671] font-mono">2019 – 2022</span>
+                <span className="text-[11px] text-[#8C7671] font-mono flex-shrink-0 whitespace-nowrap">2019 – 2022</span>
               </div>
             </div>
           </div>
