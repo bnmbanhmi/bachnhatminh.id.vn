@@ -3,8 +3,8 @@
   "name": "bachnhatminh-id-vn",
   "compatibility_date": "2026-08-12",
   "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
   "assets": {
-    "directory": "./out",
-    "binding": "ASSETS"
+    "directory": "./out"
   }
 }
