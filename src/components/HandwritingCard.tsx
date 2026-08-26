@@ -3,24 +3,22 @@
 import React, { useEffect, useRef, useCallback } from "react";
 
 interface HandwritingCardProps {
-  subtitle?: string;
   className?: string;
 }
 
-export default function HandwritingCard({
-  subtitle = "my name is",
-  className = "",
-}: HandwritingCardProps) {
+export default function HandwritingCard({ className = "" }: HandwritingCardProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const timersRef = useRef<NodeJS.Timeout[]>([]);
 
   const strokes = [
-    "b-1", "b-2",       // b: vertical, then belly
-    "a-1", "a-2",       // a: circle, then tail
-    "n-1", "n-2",       // n: vertical, then hump
-    "h-1", "h-2",       // h: vertical, then hump
-    "m-1", "m-2", "m-3", // m: vertical, first hump, second hump
-    "i-1", "i-2",       // i: body, then dot
+    "m-1", "m-2", "m-3", // m
+    "i-1", "i-2",        // i
+    "n-1", "n-2",        // n
+    "h1-1", "h1-2",      // h
+    "b-1", "b-2",        // b
+    "a-1", "a-2",        // a
+    "c-1",               // c
+    "h2-1", "h2-2",      // h
   ];
 
   const animateWrite = useCallback(() => {
@@ -44,8 +42,9 @@ export default function HandwritingCard({
     // Force reflow
     void svgRef.current.getBoundingClientRect();
 
-    const drawDuration = 750;
-    const strokeGap = 35;
+    // Constant linear speed: constant milliseconds per pixel across all strokes
+    const msPerUnit = 11;
+    const strokeGap = 20;
     let cumDelay = 0;
 
     strokes.forEach((id) => {
@@ -53,22 +52,25 @@ export default function HandwritingCard({
       if (!path) return;
 
       const len = path.getTotalLength();
-      const dur = Math.max(120, drawDuration * (len / 80));
+      // Constant velocity across all curves and lines
+      const dur = id === "i-2" ? 80 : Math.max(80, Math.round(len * msPerUnit));
 
       const timer = setTimeout(() => {
         if (path) {
-          path.style.transition = `stroke-dashoffset ${dur}ms cubic-bezier(0.4, 0, 0.2, 1)`;
+          path.style.transition = `stroke-dashoffset ${dur}ms linear`;
           path.style.strokeDashoffset = "0";
         }
       }, cumDelay);
 
       timersRef.current.push(timer);
-      cumDelay += dur + strokeGap;
+
+      // Subtle natural pen-lift pause between "minh" and "bach"
+      const extraGap = id === "h1-2" ? 120 : 0;
+      cumDelay += dur + strokeGap + extraGap;
     });
   }, []);
 
   useEffect(() => {
-    // Initial draw on mount
     const startTimer = setTimeout(animateWrite, 300);
     return () => {
       clearTimeout(startTimer);
@@ -78,78 +80,92 @@ export default function HandwritingCard({
 
   return (
     <div
+      id="helloCard"
       onClick={animateWrite}
       onMouseEnter={animateWrite}
-      className={`group cursor-pointer select-none rounded-2xl overflow-hidden shadow-lg shadow-[#7A6863]/10 hover:shadow-xl hover:shadow-[#7A6863]/15 transition-all duration-300 transform hover:-translate-y-1 bg-[#FFF1E6] border border-[#F0DDD1] ${className}`}
+      className={`w-[300px] bg-[#FFF1E6] rounded-[15px] overflow-hidden shadow-[0_4px_15px_rgba(122,104,99,0.1)] cursor-pointer select-none transition-all duration-300 hover:shadow-[0_6px_20px_rgba(122,104,99,0.15)] ${className}`}
     >
-      {/* Top Header Strip */}
-      <div className="bg-[#FF9A85] text-white text-center py-3.5 px-4 transition-colors group-hover:bg-[#FF856D]">
-        <span className="block text-xl font-extrabold tracking-[3px] uppercase leading-tight font-sans">
+      <div className="bg-[#FF9A85] text-white text-center pt-[14px] pb-[10px] px-2">
+        <span className="block text-[1.3rem] font-[800] tracking-[2px] uppercase leading-[1.2]">
           Hello
         </span>
-        <span className="block text-[11px] font-medium tracking-[2px] uppercase opacity-95 mt-0.5">
-          {subtitle}
+        <span className="block text-[0.7rem] font-[500] tracking-[1.5px] uppercase mt-[2px] opacity-90">
+          my name is
         </span>
       </div>
 
-      {/* SVG Handwriting Canvas Body */}
-      <div className="py-4 px-6 flex justify-center items-center min-h-[90px] bg-[#FFF1E6] group-hover:bg-[#FFF5ED] transition-colors">
+      <div className="py-[18px] px-0 flex justify-center items-center min-h-[80px] bg-[#FFF1E6]">
         <svg
           ref={svgRef}
-          className="handwriting-svg w-52 max-w-full h-auto"
+          className="handwriting-svg w-[215px] h-auto"
           viewBox="0 0 220 70"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <g transform="translate(31, 0)">
-            {/* b: stroke 1 = vertical, stroke 2 = belly */}
-            <path className="name-path" id="b-1" d="M12,12 L12,58" />
-            <path
-              className="name-path"
-              id="b-2"
-              d="M12,35 C12,28 22,22 26,30 C30,38 28,48 22,52 C16,56 12,52 12,48"
-            />
-            {/* a: stroke 1 = circle, stroke 2 = tail */}
-            <path
-              className="name-path"
-              id="a-1"
-              d="M48,32 C44,28 36,28 34,35 C32,42 34,52 40,54 C46,56 50,50 48,42 L48,32"
-            />
-            <path className="name-path" id="a-2" d="M48,32 L48,56" />
-            {/* n: stroke 1 = vertical, stroke 2 = hump */}
-            <path className="name-path" id="n-1" d="M58,32 L58,56" />
-            <path
-              className="name-path"
-              id="n-2"
-              d="M58,38 C58,30 66,28 70,34 C74,40 72,56 72,56"
-            />
-            {/* h: stroke 1 = tall vertical, stroke 2 = hump */}
-            <path className="name-path" id="h-1" d="M82,12 L82,56" />
-            <path
-              className="name-path"
-              id="h-2"
-              d="M82,38 C82,30 90,28 94,34 C98,40 96,56 96,56"
-            />
-            {/* m: stroke 1 = vertical, stroke 2 = first hump, stroke 3 = second hump */}
-            <path className="name-path" id="m-1" d="M106,32 L106,56" />
+          <g transform="translate(6, 0)">
+            {/* minh */}
+            {/* m: vertical, first hump, second hump */}
+            <path className="name-path" id="m-1" d="M14,32 L14,56" />
             <path
               className="name-path"
               id="m-2"
-              d="M106,38 C106,30 114,28 116,34 C118,40 118,42 118,42"
+              d="M14,38 C14,30 22,28 25,34 C28,40 28,42 28,42"
             />
             <path
               className="name-path"
               id="m-3"
-              d="M118,42 C118,34 120,28 126,28 C132,28 134,36 134,42 L134,56"
+              d="M28,42 C28,34 33,28 37,28 C41,28 42,36 42,42 L42,56"
             />
-            {/* i: stroke 1 = body, stroke 2 = dot */}
-            <path className="name-path" id="i-1" d="M144,32 L144,56" />
-            <path className="name-path" id="i-2" d="M144,22 L144.5,22.5" />
+            {/* i: body, dot */}
+            <path className="name-path" id="i-1" d="M51,32 L51,56" />
+            <path className="name-path" id="i-2" d="M51,22 L51.5,22.5" />
+            {/* n: vertical, hump */}
+            <path className="name-path" id="n-1" d="M61,32 L61,56" />
+            <path
+              className="name-path"
+              id="n-2"
+              d="M61,38 C61,30 69,28 73,34 C77,40 75,56 75,56"
+            />
+            {/* h1: tall vertical, hump */}
+            <path className="name-path" id="h1-1" d="M85,12 L85,56" />
+            <path
+              className="name-path"
+              id="h1-2"
+              d="M85,38 C85,30 93,28 97,34 C101,40 99,56 99,56"
+            />
+
+            {/* bach */}
+            {/* b: tall vertical, belly */}
+            <path className="name-path" id="b-1" d="M113,12 L113,56" />
+            <path
+              className="name-path"
+              id="b-2"
+              d="M113,35 C113,28 123,22 127,30 C131,38 129,48 123,52 C117,56 113,52 113,48"
+            />
+            {/* a: circle, tail */}
+            <path
+              className="name-path"
+              id="a-1"
+              d="M147,32 C143,28 135,28 133,35 C131,42 133,52 139,54 C145,56 149,50 147,42 L147,32"
+            />
+            <path className="name-path" id="a-2" d="M147,32 L147,56" />
+            {/* c: open curve */}
+            <path
+              className="name-path"
+              id="c-1"
+              d="M168,34 C165,28 156,28 154,36 C152,44 154,52 160,55 C166,58 170,50 170,47"
+            />
+            {/* h2: tall vertical, hump */}
+            <path className="name-path" id="h2-1" d="M180,12 L180,56" />
+            <path
+              className="name-path"
+              id="h2-2"
+              d="M180,38 C180,30 188,28 192,34 C196,40 194,56 194,56"
+            />
           </g>
         </svg>
       </div>
 
-      {/* Bottom Color Accent Strip */}
-      <div className="bg-[#FF9A85] h-5 transition-colors group-hover:bg-[#FF856D]" />
+      <div className="bg-[#FF9A85] h-[22px]" />
     </div>
   );
 }

@@ -17,23 +17,20 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Bach Nhat Minh | Product Designer & AI-Native Builder",
-  description: "Personal portfolio of Bach Nhat Minh. Product Designer & Engineer specializing in AI-native interfaces, information architecture, and telemetry-driven UX optimization.",
+  title: "Bach Nhat Minh",
+  description: "Personal portfolio of Bach Nhat Minh (@bnmbanhmi).",
   keywords: [
     "Bach Nhat Minh",
-    "Product Designer",
-    "UI/UX",
-    "AI Product Engineer",
-    "Information Architecture",
-    "Telemetry UX",
-    "PostHog",
-    "Next.js",
+    "bnmbanhmi",
+    "Product Design",
+    "AI",
+    "Software Engineering",
   ],
   authors: [{ name: "Bach Nhat Minh", url: "https://bachnhatminh.id.vn" }],
   creator: "Bach Nhat Minh",
   openGraph: {
-    title: "Bach Nhat Minh | Product Designer & AI-Native Builder",
-    description: "Product Designer & AI-native interface builder specializing in telemetry-driven UX and information architecture.",
+    title: "Bach Nhat Minh",
+    description: "Personal portfolio of Bach Nhat Minh (@bnmbanhmi).",
     url: "https://bachnhatminh.id.vn",
     siteName: "Bach Nhat Minh",
     locale: "vi_VN",
