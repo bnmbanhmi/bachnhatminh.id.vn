@@ -17,15 +17,15 @@ function BuildingSearchTabContent({
 }: BuildingSearchTabProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const tabParam = searchParams.get('tab') || 'projects';
+  const tabParam = searchParams.get('tab') || 'about';
   const postParam = searchParams.get('post') || searchParams.get('building') || null;
 
   const currentCategory =
-    tabParam === 'achievements'
-      ? 'achievements'
-      : tabParam === 'education'
-      ? 'education'
-      : 'projects';
+    tabParam === 'products'
+      ? 'products'
+      : tabParam === 'experience'
+      ? 'experience'
+      : 'about';
 
   const displayedListings = useMemo(() => {
     return PORTFOLIO_LISTINGS.filter((l) => l.post_type === currentCategory);
@@ -36,6 +36,15 @@ function BuildingSearchTabContent({
   // Building & Post Selection state directly from URL
   const selectedPostId = postParam;
   const selectedBuildingId = postParam;
+
+  // On desktop, check if selectedPostId belongs to active tab
+  const isSelectedInTab = displayedListings.some(
+    (l) => l.id === selectedPostId || (l.short_id && l.short_id === selectedPostId)
+  );
+
+  // Auto-select the first listing of active tab if no valid post param in URL for this tab
+  const defaultPostId = displayedListings.length > 0 ? displayedListings[0].id : null;
+  const desktopSelectedId = isSelectedInTab && selectedPostId ? selectedPostId : defaultPostId;
 
   const handleSelectBuilding = (buildingId: string | null, postId?: string | null) => {
     const cleanId = (postId || buildingId || '').trim();
@@ -52,7 +61,7 @@ function BuildingSearchTabContent({
     setSnapState('peek');
   };
 
-  const hasSelection = Boolean(selectedBuildingId || selectedPostId);
+  const hasMobileSelection = Boolean(selectedBuildingId || selectedPostId);
 
   return (
     <div className={`w-full flex flex-col ${className}`}>
@@ -61,14 +70,22 @@ function BuildingSearchTabContent({
         {/* Left Column: Feed Cards */}
         <div className="lg:col-span-4 relative flex flex-col lg:h-[850px] lg:max-h-[850px]">
           <div className="flex-1 lg:overflow-y-auto pr-1.5 flex flex-col gap-2.5">
-            {displayedListings.map((list) => {
-              const isSelected = selectedPostId === list.id || selectedBuildingId === list.id;
+            {displayedListings.map((list, index) => {
+              const isExplicitlySelected =
+                isSelectedInTab && (selectedPostId === list.id || selectedBuildingId === list.id);
+              const isDefaultSelected = !isSelectedInTab && index === 0;
               return (
                 <div key={list.id}>
                   <ListingCard
                     listing={list}
                     title={list.title}
-                    className={isSelected ? 'border-primary ring-1 ring-primary/40 bg-surface' : ''}
+                    className={
+                      isExplicitlySelected
+                        ? 'border-primary ring-1 ring-primary/40 bg-surface'
+                        : isDefaultSelected
+                        ? 'lg:border-primary lg:ring-1 lg:ring-primary/40 lg:bg-surface'
+                        : ''
+                    }
                     onSelect={(bId: string, pId?: string) => handleSelectBuilding(bId || list.id, pId || list.id)}
                   />
                 </div>
@@ -76,8 +93,8 @@ function BuildingSearchTabContent({
             })}
           </div>
 
-          {/* Mobile BottomSheet Detail (Only rendered on mobile screens) */}
-          {hasSelection && (
+          {/* Mobile BottomSheet Detail (Only rendered on mobile screens when user explicitly selects a post) */}
+          {hasMobileSelection && (
             <div className="lg:hidden">
               <BottomSheet
                 snapState={snapState}
@@ -101,12 +118,12 @@ function BuildingSearchTabContent({
         {/* Right Column: Desktop Detail Section (No peek or swipe, clean static scrollable pane) */}
         <div className="hidden lg:block lg:col-span-8 relative">
           <div className="lg:sticky lg:top-20 h-[calc(100dvh-112px)] lg:h-[850px] w-full rounded-md border border-secondary/30 bg-surface overflow-y-auto flex flex-col shadow-xs">
-            {hasSelection ? (
+            {desktopSelectedId ? (
               <BuildingDetailPane
-                elasticId={selectedBuildingId || undefined}
-                postId={selectedPostId || undefined}
+                elasticId={desktopSelectedId}
+                postId={desktopSelectedId}
                 initialTab="all"
-                highlightPostId={selectedPostId || undefined}
+                highlightPostId={desktopSelectedId}
                 onClose={() => handleSelectBuilding(null)}
                 className="pb-10"
               />
@@ -119,7 +136,7 @@ function BuildingSearchTabContent({
                     d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
                   />
                 </svg>
-                <span>Chọn một mục để xem chi tiết.</span>
+                <span>Select an item to view details.</span>
               </div>
             )}
           </div>
@@ -134,7 +151,7 @@ export default function BuildingSearchTab(props: BuildingSearchTabProps) {
     <Suspense
       fallback={
         <div className="py-12 text-center text-secondary text-xs">
-          Đang tải...
+          Loading...
         </div>
       }
     >

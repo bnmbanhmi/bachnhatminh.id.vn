@@ -8,6 +8,8 @@ import { formatDisplayDate, formatMoveInDate } from '@/lib/dates';
 import { trackSocialAction } from '@/lib/telemetry';
 import { buildPostShareUrl } from '@/lib/slug';
 
+import type { ArticleContent } from '@/lib/portfolio-data';
+
 export interface Listing {
   id: string;
   short_id?: string | null;
@@ -41,6 +43,7 @@ export interface Listing {
     ward_code?: string | null;
     canonical_location?: unknown;
   } | null;
+  article?: ArticleContent | null;
 }
 
 export interface ListingCardProps {
@@ -66,9 +69,9 @@ export interface ListingCardProps {
 export function formatPrice(price: number): string {
   if (price >= 1000000) {
     const million = price / 1000000;
-    return `${million.toLocaleString('vi-VN', { maximumFractionDigits: 2 })} tr`;
+    return `${million.toLocaleString('en-US', { maximumFractionDigits: 2 })}M ₫`;
   }
-  return `${(price / 1000).toLocaleString('vi-VN')}k`;
+  return `${(price / 1000).toLocaleString('en-US')}k ₫`;
 }
 
 export function cleanDescription(desc?: string | null): string {
@@ -107,7 +110,7 @@ export default function ListingCard({
     (listing as any).address_text ||
     (listing as any).street_text ||
     listing.title ||
-    'Hà Nội';
+    'Hanoi';
 
   const address = rawAddress;
   const rawDesc = listing.content || listing.description || null;
@@ -125,7 +128,7 @@ export default function ListingCard({
 
   const specParts: string[] = [];
   if (variant === 'building' && listing.price > 0) {
-    specParts.push(`${formatPrice(listing.price)}/tháng`);
+    specParts.push(`${formatPrice(listing.price)}/month`);
   }
   if (subtitle && subtitle !== listing.title) {
     specParts.push(subtitle);
@@ -133,8 +136,8 @@ export default function ListingCard({
   if (showDistance && listing.distanceMeters != null && Number.isFinite(listing.distanceMeters)) {
     const dStr =
       listing.distanceMeters < 1000
-        ? `Cách ${Math.round(listing.distanceMeters)}m`
-        : `Cách ${(listing.distanceMeters / 1000).toFixed(1)}km`;
+        ? `${Math.round(listing.distanceMeters)}m away`
+        : `${(listing.distanceMeters / 1000).toFixed(1)}km away`;
     specParts.push(dStr);
   }
 
@@ -148,9 +151,9 @@ export default function ListingCard({
   const postType = listing.post_type || listing.source_type;
   const sourceType = listing.source_type || listing.extracted_data?.source_type;
   const authorRole = listing.author_role || listing.extracted_data?.reviewer_role || listing.reviewer_role;
-  const isRoommatePost = postType === 'roommate' || listing.extracted_data?.room_state === 'has_room' || badgeText === 'Ở ghép';
+  const isRoommatePost = postType === 'roommate' || listing.extracted_data?.room_state === 'has_room' || badgeText === 'Roommate';
   const priceUnit = listing.extracted_data?.price_unit || (listing as any).price_unit;
-  const priceSuffix = isRoommatePost && priceUnit !== 'whole_room' ? '/người' : '';
+  const priceSuffix = isRoommatePost && priceUnit !== 'whole_room' ? '/person' : '';
 
   const footerAction = listing.price > 0 ? (
     <span className="text-tertiary font-extrabold text-sm sm:text-base font-space-grotesk whitespace-nowrap">
@@ -170,13 +173,13 @@ export default function ListingCard({
   } else if (badgeText) {
     cardFlags.push(badgeText);
   } else if (isRoommatePost) {
-    cardFlags.push({ text: 'Ở ghép', bgClass: 'bg-blue-700', textClass: 'text-white' });
+    cardFlags.push({ text: 'Roommate', bgClass: 'bg-blue-700', textClass: 'text-white' });
   } else if (authorRole === 'tenant' || postType === 'pass_phong' || postType === 'transfer' || sourceType === 'pass_phong') {
-    cardFlags.push({ text: 'Pass lại', bgClass: 'bg-tertiary', textClass: 'text-white' });
+    cardFlags.push({ text: 'Transfer', bgClass: 'bg-tertiary', textClass: 'text-white' });
   } else if (authorRole === 'broker' || sourceType === 'broker') {
     cardFlags.push({ text: 'Sale', bgClass: 'bg-slate-600', textClass: 'text-white' });
   } else if (postType === 'review') {
-    cardFlags.push({ text: 'Đánh giá', bgClass: 'bg-amber-600', textClass: 'text-white' });
+    cardFlags.push({ text: 'Review', bgClass: 'bg-amber-600', textClass: 'text-white' });
   }
 
   return (

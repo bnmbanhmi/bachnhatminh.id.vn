@@ -7,21 +7,21 @@ import Footer from '@/components/Footer';
 import BuildingSearchTab from '@/components/tabs/BuildingSearchTab';
 import SegmentedControl, { SegmentedOption } from '@/components/ui/SegmentedControl';
 
-type SearchMode = 'projects' | 'achievements' | 'education';
+type SearchMode = 'about' | 'products' | 'experience';
 
 function getSearchTabOptions(): SegmentedOption[] {
   return [
     {
-      key: 'projects',
-      label: 'Projects',
+      key: 'about',
+      label: 'About me',
     },
     {
-      key: 'achievements',
-      label: 'Achievements',
+      key: 'products',
+      label: 'Products',
     },
     {
-      key: 'education',
-      label: 'Education',
+      key: 'experience',
+      label: 'Experience',
     },
   ];
 }
@@ -29,13 +29,13 @@ function getSearchTabOptions(): SegmentedOption[] {
 function HomePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const rawTab = searchParams.get('tab') || 'projects';
+  const rawTab = searchParams.get('tab') || 'about';
   const searchMode: SearchMode =
-    rawTab === 'achievements'
-      ? 'achievements'
-      : rawTab === 'education'
-      ? 'education'
-      : 'projects';
+    rawTab === 'products'
+      ? 'products'
+      : rawTab === 'experience'
+      ? 'experience'
+      : 'about';
 
   const searchTabOptions = getSearchTabOptions();
 
@@ -55,9 +55,14 @@ function HomePageContent() {
       <main className="max-w-7xl mx-auto px-4 md:px-6 w-full flex-1 flex flex-col py-6 gap-4">
         {/* Header Title & Clean Search Tabs Switcher */}
         <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-primary tracking-tight">
-            Portfolio
-          </h1>
+          <div className="flex flex-col gap-1.5">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-primary tracking-tight">
+              Portfolio
+            </h1>
+            <p className="text-xs md:text-sm text-secondary font-sans leading-relaxed">
+              Product Designer & AI Engineer • Based in Ho Chi Minh City, Vietnam (Available for hybrid work at Workflow Thao Dien)
+            </p>
+          </div>
           <SegmentedControl
             ariaLabel="Portfolio category"
             fullWidth="mobile"
@@ -83,7 +88,7 @@ export default function Home() {
     <Suspense
       fallback={
         <div className="min-h-screen bg-background flex items-center justify-center text-secondary text-sm">
-          Đang tải...
+          Loading...
         </div>
       }
     >

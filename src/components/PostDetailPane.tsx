@@ -15,7 +15,7 @@ import { pushHomeSearchParams } from '@/lib/home-url-state';
 import { trackBuildingInspect, trackCardDwellTime, trackFormStep, trackSocialAction } from '@/lib/telemetry';
 import { getFavorites, toggleFavorite } from '@/lib/storage';
 import { buildPostShareUrl } from '@/lib/slug';
-import { PORTFOLIO_LISTINGS } from '@/lib/portfolio-data';
+import { PORTFOLIO_LISTINGS, type ArticleContent } from '@/lib/portfolio-data';
 
 export interface PostDetailPaneProps {
   elasticId?: string;
@@ -54,6 +54,7 @@ export interface ListingRecord {
   extracted_data?: Record<string, unknown> | null;
   move_in_date?: string | null;
   gender_pref?: string | null;
+  article?: ArticleContent | null;
 }
 
 export interface ReviewRecord {
@@ -120,12 +121,12 @@ export interface RoommateRecord {
 export type Profile = RoommateRecord;
 
 function formatVND(value: number | null | undefined): string {
-  if (!value || value <= 0) return 'Thỏa thuận';
+  if (!value || value <= 0) return 'Negotiable';
   if (value >= 1000000) {
     const valInMillions = value / 1000000;
-    return `${valInMillions % 1 === 0 ? valInMillions : valInMillions.toFixed(1).replace('.', ',')} tr`;
+    return `${valInMillions % 1 === 0 ? valInMillions : valInMillions.toFixed(1)}M ₫`;
   }
-  return `${value.toLocaleString('vi-VN')} đ`;
+  return `${value.toLocaleString('en-US')} ₫`;
 }
 
 function formatDDMM(dateStr?: string | null | number): string | null {
@@ -190,6 +191,7 @@ interface StandardPostData {
   media?: string[] | null;
   evidenceMedia?: string[] | null;
   mediaManifest?: unknown;
+  article?: ArticleContent | null;
 }
 
 function getListingStandardData(l: ListingRecord): StandardPostData {
@@ -216,6 +218,7 @@ function getListingStandardData(l: ListingRecord): StandardPostData {
     content: l.content || l.description || null,
     media: l.media,
     mediaManifest: l.media_manifest,
+    article: l.article || (ext.article as any) || (l as any).article || null,
   };
 }
 
@@ -242,6 +245,7 @@ function getReviewStandardData(r: ReviewRecord): StandardPostData {
     media: r.media,
     evidenceMedia: r.evidence_media,
     mediaManifest: r.media_manifest,
+    article: (ext.article as any) || (r as any).article || null,
   };
 }
 
@@ -295,6 +299,7 @@ function getRoommateStandardData(rm: RoommateRecord): StandardPostData {
     content,
     media: rm.media,
     mediaManifest: rm.media_manifest,
+    article: (ext.article as any) || (rm as any).article || null,
   };
 }
 
@@ -314,7 +319,7 @@ function StandardPostCard({
   const isRoommate = post.postType === 'roommate';
   const isReview = post.postType === 'review';
 
-  // 1. Nguồn / Liên hệ
+  // 1. Source / Contact
   const contactData = formatSourceAndContact({
     postType: post.postType,
     sourceType: post.sourceType,
@@ -323,19 +328,19 @@ function StandardPostCard({
     isLoggedIn,
   });
 
-  // 2. Specs Row: Giá thuê/Ngân sách + Subtitle + Diện tích + Ngày / Thời gian
+  // 2. Specs Row: Rent/Budget + Subtitle + Area + Date / Time
   const priceVal = post.price && post.price > 0 ? post.price : null;
   const minB = post.budgetMin ?? 0;
   const maxB = post.budgetMax ?? 0;
   let priceStr: string | null = null;
   if (priceVal !== null) {
-    priceStr = `${formatVND(priceVal)}${isRoommate ? (post.priceUnit === 'whole_room' ? '/phòng' : '/người') : '/tháng'}`;
+    priceStr = `${formatVND(priceVal)}${isRoommate ? (post.priceUnit === 'whole_room' ? '/room' : '/person') : '/month'}`;
   } else if (isRoommate && minB > 0 && maxB > 0) {
-    priceStr = minB === maxB ? `${formatVND(maxB)}/người` : `${formatVND(minB)} - ${formatVND(maxB)}/người`;
+    priceStr = minB === maxB ? `${formatVND(maxB)}/person` : `${formatVND(minB)} - ${formatVND(maxB)}/person`;
   } else if (isRoommate && maxB > 0) {
-    priceStr = `< ${formatVND(maxB)}/người`;
+    priceStr = `< ${formatVND(maxB)}/person`;
   } else if (isRoommate && minB > 0) {
-    priceStr = `> ${formatVND(minB)}/người`;
+    priceStr = `> ${formatVND(minB)}/person`;
   }
 
   const subtitle = post.subtitle || null;
@@ -350,113 +355,188 @@ function StandardPostCard({
     return visibleMediaAssets(raw, post.mediaManifest, post.sourceType);
   }, [post.evidenceMedia, post.media, post.mediaManifest, post.sourceType]);
 
+  const hasArticle = Boolean(post.article);
+
   return (
     <article
       id={`post-item-${(post.shortId || post.id).toLowerCase()}`}
       data-post-id={post.id.toLowerCase()}
       data-short-id={post.shortId ? post.shortId.toLowerCase() : undefined}
-      className={`flex flex-col gap-2.5 py-3.5 px-4 border-b border-secondary/20 transition-colors ${
+      className={`flex flex-col gap-3 py-4 px-4 sm:px-6 border-b border-secondary/20 transition-colors ${
         isHighlighted ? 'bg-primary/5 ring-1 ring-tertiary/40 rounded-sm' : ''
       }`}
     >
-      {/* Line 1: Links */}
-      {post.sourceUrl && (
-        <div className="w-full flex items-center justify-between gap-2 pt-0.5">
-          <a
-            href={post.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => onConvertedOutbound?.()}
-            className="text-primary hover:text-tertiary font-semibold text-xs sm:text-sm underline underline-offset-4 decoration-secondary/40 hover:decoration-tertiary transition-colors break-words"
-          >
-            {post.linkText || post.sourceUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-          </a>
-        </div>
-      )}
-
-      {/* Line 2: Giá thuê/Ngân sách + Subtitle + Diện tích + Ngày */}
-      {(priceStr || subtitle || areaVal || dateSpec || (isReview && post.rating)) && (
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm font-sans text-primary">
-          {priceStr && (
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-secondary">
-                {isRoommate ? 'Ngân sách:' : 'Giá thuê:'}
-              </span>
-              <span className="font-bold text-tertiary">{priceStr}</span>
-            </div>
-          )}
-
-          {isReview && post.rating && post.rating > 0 && (
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-secondary">Đánh giá:</span>
-              <div className="flex items-center text-amber-500 gap-0.5" title={`${post.rating}/5 sao`}>
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <svg
-                    key={star}
-                    className="w-4 h-4"
-                    fill={star <= Math.round(post.rating!) ? 'currentColor' : 'none'}
-                    stroke="currentColor"
-                    strokeWidth={1.5}
-                    viewBox="0 0 24 24"
+      {hasArticle && post.article ? (
+        <div className="flex flex-col gap-4">
+          {/* Article Header: Outbound Link & Metadata Row */}
+          {(post.sourceUrl || subtitle || dateSpec) && (
+            <div className="flex flex-col gap-2 pb-1 border-b border-secondary/15">
+              {post.sourceUrl && (
+                <div className="w-full flex items-center justify-between gap-2">
+                  <a
+                    href={post.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => onConvertedOutbound?.()}
+                    className="text-primary hover:text-tertiary font-semibold text-xs sm:text-sm underline underline-offset-4 decoration-secondary/40 hover:decoration-tertiary inline-flex items-center gap-1.5 transition-colors break-words"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.116.488-.415.87-.837.614l-4.742-2.884a.563.563 0 00-.576 0l-4.742 2.884c-.422.256-.953-.126-.837-.614l1.285-5.385a.563.563 0 00-.182-.557l-4.204-3.602c-.38-.325-.178-.948.32-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
-                    />
-                  </svg>
-                ))}
-              </div>
+                    <span>{post.linkText || post.sourceUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}</span>
+                    <svg className="w-3.5 h-3.5 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                </div>
+              )}
+              {(subtitle || dateSpec) && (
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm font-sans">
+                  {subtitle && (
+                    <span className="text-secondary font-medium">{subtitle}</span>
+                  )}
+                  {dateSpec && (
+                    <span className="text-tertiary font-bold font-space-grotesk ml-auto">{dateSpec}</span>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
-          {subtitle && (
-            <div className="flex items-center gap-1.5 text-secondary font-medium">
-              <span>{subtitle}</span>
+          {/* Editorial Sections */}
+          {post.article.sections && post.article.sections.length > 0 && (
+            <div className="flex flex-col gap-5">
+              {post.article.sections.map((section, sIdx) => (
+                <section key={sIdx} className="flex flex-col gap-2">
+                  {section.sectionTitle && (
+                    <h2 className="text-base md:text-lg font-bold text-primary mt-1 font-sans tracking-tight">
+                      {section.sectionTitle}
+                    </h2>
+                  )}
+
+                  {section.paragraphs && section.paragraphs.length > 0 && (
+                    <div className="flex flex-col gap-2">
+                      {section.paragraphs.map((p, pIdx) => (
+                        <p key={pIdx} className="text-xs md:text-sm text-primary leading-relaxed">
+                          {p}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+
+                  {section.listItems && section.listItems.length > 0 && (
+                    <ul className="list-disc pl-5 flex flex-col gap-1.5 text-xs md:text-sm text-secondary font-medium">
+                      {section.listItems.map((item, iIdx) => (
+                        <li key={iIdx} className="leading-relaxed">
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              ))}
             </div>
           )}
 
-          {areaVal && (
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-secondary">Diện tích:</span>
-              <span className="font-medium text-primary">{areaVal} m²</span>
-            </div>
-          )}
-
-          {/* HIDE FOR NOW: Điện nước / Dịch vụ commented out
-          {post.utilityDetailsRaw && (
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-secondary">Điện nước/Dịch vụ:</span>
-              <span className="font-medium text-primary bg-secondary/10 px-1.5 py-0.5 rounded text-xs">
-                {post.utilityDetailsRaw}
-              </span>
-            </div>
-          )}
-          */}
-
-          {dateSpec && (
-            <div className="flex items-center gap-1 text-tertiary font-bold font-space-grotesk ml-auto text-xs sm:text-sm whitespace-nowrap">
-              <span>{dateSpec}</span>
-            </div>
+          {/* Media in Article */}
+          {postMedia.length > 0 && (
+            <MediaGallery
+              assets={postMedia}
+              alt="Post media"
+              variant="hero"
+              className="mt-2"
+            />
           )}
         </div>
-      )}
+      ) : (
+        /* Fallback for standard listings / reviews / roommates without article content */
+        <>
+          {/* Line 1: Links */}
+          {post.sourceUrl && (
+            <div className="w-full flex items-center justify-between gap-2 pt-0.5">
+              <a
+                href={post.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => onConvertedOutbound?.()}
+                className="text-primary hover:text-tertiary font-semibold text-xs sm:text-sm underline underline-offset-4 decoration-secondary/40 hover:decoration-tertiary transition-colors break-words"
+              >
+                {post.linkText || post.sourceUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+              </a>
+            </div>
+          )}
 
-      {/* Line 3: Mô tả (Clean full un-clamped text, no title heading) */}
-      {post.content && post.content.trim().length > 0 && (
-        <div className="text-primary text-xs whitespace-pre-line leading-relaxed">
-          {post.content.trim()}
-        </div>
-      )}
+          {/* Line 2: Rent/Budget + Subtitle + Area + Date */}
+          {(priceStr || subtitle || areaVal || dateSpec || (isReview && post.rating)) && (
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm font-sans text-primary">
+              {priceStr && (
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-secondary">
+                    {isRoommate ? 'Budget:' : 'Rent:'}
+                  </span>
+                  <span className="font-bold text-tertiary">{priceStr}</span>
+                </div>
+              )}
 
-      {/* Line 4: Media */}
-      {postMedia.length > 0 && (
-        <MediaGallery
-          assets={postMedia}
-          alt="Ảnh bài đăng"
-          variant="hero"
-          className="mt-1"
-        />
+              {isReview && post.rating && post.rating > 0 && (
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-secondary">Rating:</span>
+                  <div className="flex items-center text-amber-500 gap-0.5" title={`${post.rating}/5 stars`}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg
+                        key={star}
+                        className="w-4 h-4"
+                        fill={star <= Math.round(post.rating!) ? 'currentColor' : 'none'}
+                        stroke="currentColor"
+                        strokeWidth={1.5}
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385c.116.488-.415.87-.837.614l-4.742-2.884a.563.563 0 00-.576 0l-4.742 2.884c-.422.256-.953-.126-.837-.614l1.285-5.385a.563.563 0 00-.182-.557l-4.204-3.602c-.38-.325-.178-.948.32-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
+                        />
+                      </svg>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {subtitle && (
+                <div className="flex items-center gap-1.5 text-secondary font-medium">
+                  <span>{subtitle}</span>
+                </div>
+              )}
+
+              {areaVal && (
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-secondary">Area:</span>
+                  <span className="font-medium text-primary">{areaVal} m²</span>
+                </div>
+              )}
+
+              {dateSpec && (
+                <div className="flex items-center gap-1 text-tertiary font-bold font-space-grotesk ml-auto text-xs sm:text-sm whitespace-nowrap">
+                  <span>{dateSpec}</span>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Line 3: Description (Clean full un-clamped text, no title heading) */}
+          {post.content && post.content.trim().length > 0 && (
+            <div className="text-primary text-xs whitespace-pre-line leading-relaxed">
+              {post.content.trim()}
+            </div>
+          )}
+
+          {/* Line 4: Media */}
+          {postMedia.length > 0 && (
+            <MediaGallery
+              assets={postMedia}
+              alt="Post image"
+              variant="hero"
+              className="mt-1"
+            />
+          )}
+        </>
       )}
     </article>
   );
@@ -570,7 +650,7 @@ export default function PostDetailPane({
         const desiredWard = item.extracted_data?.desired_ward || item.desired_ward;
         const locType = item.extracted_data?.desired_location_type || item.desired_location_type;
         const addressRaw = item.extracted_data?.address_raw || item.address_raw;
-        const addr = addressRaw || (desiredWard ? formatDesiredWardDisplay(desiredWard, locType) : 'Tìm ở ghép');
+        const addr = addressRaw || (desiredWard ? formatDesiredWardDisplay(desiredWard, locType) : 'Roommate Search');
         setAddressTitle(addr);
       } else {
         setStandaloneProfile(null);
@@ -651,14 +731,14 @@ export default function PostDetailPane({
             const desiredWard = ext?.desired_ward;
             const locType = ext?.desired_location_type;
             const addressRaw = ext?.address_raw;
-            addrText = addressRaw || (desiredWard ? formatDesiredWardDisplay(desiredWard, locType) : 'Chi tiết bài đăng');
+            addrText = addressRaw || (desiredWard ? formatDesiredWardDisplay(desiredWard, locType) : 'Post Details');
           }
         }
       }
 
       const activeNmbId = canonicalNmbId || null;
       setResolvedBuildingId(activeNmbId);
-      setAddressTitle(addrText || (canonicalNmbId ? `Địa chỉ ${canonicalNmbId}` : 'Chi tiết bài đăng'));
+      setAddressTitle(addrText || (canonicalNmbId ? `Location ${canonicalNmbId}` : 'Post Details'));
 
       // 3. Fetch all posts attached to this building or matching ID
       let postsQuery = supabase.from('posts_public').select(`
@@ -1007,7 +1087,7 @@ export default function PostDetailPane({
   if (loading) {
     return (
       <div className={`p-8 text-center text-xs text-secondary font-semibold ${className}`}>
-        Đang tải...
+        Loading...
       </div>
     );
   }
@@ -1015,13 +1095,13 @@ export default function PostDetailPane({
   if (!standaloneProfile && totalPostsCount === 0 && !addressTitle) {
     return (
       <div className={`p-6 text-center text-secondary text-xs flex flex-col items-center gap-3 ${className}`}>
-        <p className="font-bold text-primary text-sm">Không tìm thấy thông tin bài đăng</p>
+        <p className="font-bold text-primary text-sm">No post information found</p>
         <button
           type="button"
           onClick={() => onClose?.()}
           className="btn-primary text-xs px-4 py-1.5 font-semibold cursor-pointer"
         >
-          Quay lại danh sách
+          Back to list
         </button>
       </div>
     );
@@ -1040,7 +1120,7 @@ export default function PostDetailPane({
           <div className="px-4 py-3 flex items-start justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <h1 className="text-lg md:text-xl font-bold text-primary leading-snug flex-1 min-w-0">
-                {addressTitle || 'Tìm người ở ghép'}
+                {addressTitle || 'Roommate Search'}
               </h1>
             </div>
             <div className="flex items-center gap-1 shrink-0 pt-0.5 z-30">
@@ -1048,7 +1128,7 @@ export default function PostDetailPane({
                 <button
                   type="button"
                   onClick={() => onClose()}
-                  aria-label="Đóng"
+                  aria-label="Close"
                   className="p-1 rounded-md text-secondary hover:text-primary hover:bg-neutral transition-colors cursor-pointer"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1060,7 +1140,7 @@ export default function PostDetailPane({
           </div>
         </header>
 
-        {/* Standard Post Card: 1. Nguồn/Liên hệ, 2. Specs, 3. Mô tả, 4. Media */}
+        {/* Standard Post Card: 1. Source/Contact, 2. Specs, 3. Description, 4. Media */}
         <StandardPostCard
           post={getRoommateStandardData(standaloneProfile)}
           isLoggedIn={!!user}
@@ -1094,7 +1174,7 @@ export default function PostDetailPane({
           <div className="px-4 py-3 flex items-start justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <h1 className="text-lg md:text-xl font-bold text-primary leading-snug flex-1 min-w-0">
-                {addressTitle || 'Chi tiết bài đăng'}
+                {addressTitle || 'Post Details'}
               </h1>
             </div>
             <div className="flex items-center gap-1 shrink-0 pt-0.5 z-30">
@@ -1102,7 +1182,7 @@ export default function PostDetailPane({
                 <button
                   type="button"
                   onClick={() => onClose()}
-                  aria-label="Đóng"
+                  aria-label="Close"
                   className="p-1 rounded-md text-secondary hover:text-primary hover:bg-neutral transition-colors cursor-pointer"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1114,7 +1194,7 @@ export default function PostDetailPane({
           </div>
         </header>
 
-        {/* Standard Post Card: 1. Nguồn/Liên hệ, 2. Specs, 3. Mô tả, 4. Media */}
+        {/* Standard Post Card: 1. Source/Contact, 2. Specs, 3. Description, 4. Media */}
         <StandardPostCard
           post={singleData}
           isLoggedIn={!!user}
@@ -1130,7 +1210,7 @@ export default function PostDetailPane({
 
   // ==========================================
   // VIEW 3: MULTI-POST SHARED ADDRESS (>= 2 POSTS)
-  // Tabbed view: Tin đăng (x) / Review (x) / Ở ghép (x)
+  // Tabbed view: Listings (x) / Reviews (x) / Roommates (x)
   // ==========================================
   return (
     <div ref={paneRef} className={`relative flex flex-col bg-surface text-primary ${className}`}>
@@ -1141,7 +1221,7 @@ export default function PostDetailPane({
         <div className="px-4 py-3 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <h1 className="text-lg md:text-xl font-bold text-primary leading-snug flex-1 min-w-0">
-              {addressTitle || 'Địa chỉ'}
+              {addressTitle || 'Location'}
             </h1>
           </div>
           <div className="flex items-center gap-1 shrink-0 pt-0.5 z-30">
@@ -1149,7 +1229,7 @@ export default function PostDetailPane({
               <button
                 type="button"
                 onClick={() => onClose()}
-                aria-label="Đóng"
+                aria-label="Close"
                 className="p-1 rounded-md text-secondary hover:text-primary hover:bg-neutral transition-colors cursor-pointer"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1166,9 +1246,9 @@ export default function PostDetailPane({
         <SegmentedControl
           fullWidth
           options={[
-            { key: 'listings', label: `Tin đăng (${listings.length})` },
-            { key: 'reviews', label: `Review (${reviews.length})` },
-            { key: 'roommates', label: `Ở ghép (${roommates.length})` },
+            { key: 'listings', label: `Listings (${listings.length})` },
+            { key: 'reviews', label: `Reviews (${reviews.length})` },
+            { key: 'roommates', label: `Roommates (${roommates.length})` },
           ]}
           activeKey={subTab}
           onChange={(key) => setUserSubTab(key as 'listings' | 'reviews' | 'roommates')}
@@ -1179,7 +1259,7 @@ export default function PostDetailPane({
       <div className="flex flex-col">
         {subTab === 'listings' && (
           listings.length === 0 ? (
-            <div className="px-4 py-6 text-center text-xs text-secondary">Trống</div>
+            <div className="px-4 py-6 text-center text-xs text-secondary">Empty</div>
           ) : (
             listings.map((l) => {
               const isHighlighted = Boolean(
@@ -1202,7 +1282,7 @@ export default function PostDetailPane({
 
         {subTab === 'reviews' && (
           reviews.length === 0 ? (
-            <div className="px-4 py-6 text-center text-xs text-secondary">Trống</div>
+            <div className="px-4 py-6 text-center text-xs text-secondary">Empty</div>
           ) : (
             reviews.map((rev) => {
               const isHighlighted = Boolean(
@@ -1225,7 +1305,7 @@ export default function PostDetailPane({
 
         {subTab === 'roommates' && (
           roommates.length === 0 ? (
-            <div className="px-4 py-6 text-center text-xs text-secondary">Trống</div>
+            <div className="px-4 py-6 text-center text-xs text-secondary">Empty</div>
           ) : (
             roommates.map((rm) => {
               const isHighlighted = Boolean(
