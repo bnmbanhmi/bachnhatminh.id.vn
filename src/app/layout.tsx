@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Public_Sans, Space_Grotesk } from "next/font/google";
-import { PostHogProvider } from "./providers";
 import "./globals.css";
 
 const publicSans = Public_Sans({
@@ -45,11 +44,11 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="vi"
+      lang="en"
       className={`${publicSans.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-neutral text-primary">
-        <PostHogProvider>{children}</PostHogProvider>
+        {children}
       </body>
     </html>
   );

@@ -269,7 +269,7 @@ export default function BottomSheet({
         }}
       >
         {React.isValidElement(children)
-          ? React.cloneElement(children as React.ReactElement<any>, {
+          ? React.cloneElement(children as React.ReactElement<Record<string, unknown>>, {
               dragHandleProps: {
                 onPointerDown: handlePointerDown,
                 onPointerMove: handlePointerMove,
