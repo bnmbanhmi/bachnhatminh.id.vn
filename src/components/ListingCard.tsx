@@ -13,6 +13,7 @@ export interface Listing {
   short_id?: string | null;
   title: string;
   price: number;
+  date_range?: string | null;
   rating?: number | null;
   description?: string | null;
   content?: string | null;
@@ -23,6 +24,7 @@ export interface Listing {
   author_role?: string | null;
   source_type?: string | null;
   source_url?: string | null;
+  link_text?: string | null;
   reviewer_role?: string | null;
   rough_area?: number | null;
   move_in_date?: string | null;
@@ -58,6 +60,7 @@ export interface ListingCardProps {
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  className?: string;
 }
 
 export function formatPrice(price: number): string {
@@ -89,6 +92,7 @@ export default function ListingCard({
   onClick,
   onMouseEnter,
   onMouseLeave,
+  className,
 }: ListingCardProps) {
   const buildingId = listing.building_id || listing.buildings?.nmb_id || (listing as any).house_id || '';
   const canonicalId = buildingId ? buildingId.toLowerCase() : '';
@@ -108,27 +112,23 @@ export default function ListingCard({
   const address = rawAddress;
   const rawDesc = listing.content || listing.description || null;
 
-  const genderPrefRaw = genderPref || listing.extracted_data?.gender_preference || null;
-  const genderText =
-    genderPrefRaw === 'female'
-      ? 'Nữ'
-      : genderPrefRaw === 'male'
-      ? 'Nam'
-      : genderPrefRaw === 'any'
-      ? 'Cả hai'
-      : null;
+  const dateRange =
+    listing.date_range ||
+    listing.extracted_data?.date_range ||
+    listing.published_at ||
+    listing.created_at;
 
-  const moveInDateVal = moveInDate || listing.move_in_date || listing.extracted_data?.move_in_date;
-  const cardDate = moveInDateVal
-    ? formatMoveInDate(moveInDateVal)
-    : formatDisplayDate(listing.published_at || listing.extracted_data?.published_at || listing.created_at);
+  const subtitle =
+    listing.extracted_data?.subtitle ||
+    listing.buildings?.street_text ||
+    null;
 
   const specParts: string[] = [];
   if (variant === 'building' && listing.price > 0) {
     specParts.push(`${formatPrice(listing.price)}/tháng`);
   }
-  if (genderText) {
-    specParts.push(genderText);
+  if (subtitle && subtitle !== listing.title) {
+    specParts.push(subtitle);
   }
   if (showDistance && listing.distanceMeters != null && Number.isFinite(listing.distanceMeters)) {
     const dStr =
@@ -137,7 +137,6 @@ export default function ListingCard({
         : `Cách ${(listing.distanceMeters / 1000).toFixed(1)}km`;
     specParts.push(dStr);
   }
-  if (cardDate) specParts.push(cardDate);
 
   const normalizedDesc = cleanDescription(rawDesc);
   const listingAssets = visibleMediaAssets(listing.media, listing.media_manifest, listing.source_type);
@@ -156,6 +155,10 @@ export default function ListingCard({
   const footerAction = listing.price > 0 ? (
     <span className="text-tertiary font-extrabold text-sm sm:text-base font-space-grotesk whitespace-nowrap">
       {formatPrice(listing.price)}{priceSuffix}
+    </span>
+  ) : dateRange ? (
+    <span className="text-tertiary font-bold text-xs sm:text-sm font-space-grotesk whitespace-nowrap">
+      {dateRange}
     </span>
   ) : undefined;
 
@@ -179,7 +182,7 @@ export default function ListingCard({
   return (
     <BaseCard
       variant={variant === 'building' ? 'building' : 'card'}
-      href={cardHref}
+      href={onSelect || onClick ? undefined : cardHref}
       onClick={(e) => {
         if (onSelect) {
           onSelect(buildingId || '', listing.short_id || listing.id);
@@ -200,6 +203,7 @@ export default function ListingCard({
       expandable={variant === 'building'}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      className={className}
     >
       {cardBodyText}
     </BaseCard>

@@ -28,7 +28,7 @@ export default function ContactDisclosure({
   const [copied, setCopied] = useState(false);
   const isSmall = size === 'sm';
 
-  // 1. External Source with URL -> Clear, high-contrast CTA Button
+  // 1. External Source with URL -> Normal Underlined Hyperlink
   if (info.sourceUrl) {
     return (
       <a
@@ -41,46 +41,10 @@ export default function ContactDisclosure({
           if (postId) {
             trackOutboundClick(postId, sourceType || 'external');
           }
-          const urlLower = (info.sourceUrl || '').toLowerCase();
-          const typeLower = (sourceType || '').toLowerCase();
-          const isZalo = urlLower.includes('zalo.me') || typeLower.includes('zalo');
-          const isFb = urlLower.includes('facebook.com') || urlLower.includes('fb.com') || typeLower.includes('facebook');
-          const targetId = postId || buildingId || undefined;
-
-          if (isZalo) {
-            trackSocialAction({
-              action_type: 'share_zalo',
-              target_type: postId ? 'post' : 'building',
-              target_id: targetId,
-            });
-          } else if (isFb) {
-            trackSocialAction({
-              action_type: 'share_facebook',
-              target_type: postId ? 'post' : 'building',
-              target_id: targetId,
-            });
-          }
         }}
-        className={`${
-          isSmall
-            ? 'bg-tertiary/10 text-tertiary hover:bg-tertiary hover:text-neutral text-xs font-semibold px-2.5 py-1 rounded transition-colors inline-flex items-center gap-1'
-            : 'bg-tertiary text-neutral font-semibold text-sm sm:text-base px-4 py-2 rounded-md hover:bg-[#A23522] transition-colors inline-flex items-center gap-1.5 shadow-sm active:scale-[0.98]'
-        } ${className}`}
+        className={`text-primary hover:text-tertiary font-semibold text-xs sm:text-sm underline underline-offset-4 decoration-secondary/40 hover:decoration-tertiary transition-colors break-all ${className}`}
       >
-        <span>{info.sourceText}</span>
-        <svg
-          className={`${isSmall ? 'w-3.5 h-3.5' : 'w-4 h-4'} shrink-0 stroke-current`}
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2.2}
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-          />
-        </svg>
+        {info.sourceUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}
       </a>
     );
   }

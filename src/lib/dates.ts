@@ -9,7 +9,7 @@ export function formatDisplayDate(dateStr?: string | null): string | null {
 
 export function formatMoveInDate(dateStr?: string | null): string | null {
   const date = formatDisplayDate(dateStr);
-  return date ? `Vào ở: ${date}` : null;
+  return date || null;
 }
 
 export type DateFilterOption = 'all' | 'today' | '3d' | '7d' | '30d';

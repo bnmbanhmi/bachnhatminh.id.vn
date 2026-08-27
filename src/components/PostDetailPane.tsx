@@ -184,6 +184,9 @@ interface StandardPostData {
   publishedAt?: string | null;
   createdAt?: string | null;
   content?: string | null;
+  subtitle?: string | null;
+  dateRange?: string | null;
+  linkText?: string | null;
   media?: string[] | null;
   evidenceMedia?: string[] | null;
   mediaManifest?: unknown;
@@ -198,6 +201,7 @@ function getListingStandardData(l: ListingRecord): StandardPostData {
     postType: l.post_type || 'listing',
     sourceType: l.source_type,
     sourceUrl: l.source_url,
+    linkText: (ext.link_text as string) || (l as any).link_text || (ext.source_text as string) || (l as any).source_text || null,
     contactInfo: l.contact_info || (ext.contact_info as string) || null,
     price: l.price ?? (ext.price as number) ?? null,
     priceUnit: (ext.price_unit as string) || null,
@@ -207,6 +211,8 @@ function getListingStandardData(l: ListingRecord): StandardPostData {
     moveInDate: l.move_in_date ?? (ext.move_in_date as string) ?? null,
     publishedAt: l.published_at,
     createdAt: l.created_at,
+    subtitle: (ext.subtitle as string) || (l as any).subtitle || (l as any).buildings?.street_text || null,
+    dateRange: (ext.date_range as string) || (l as any).date_range || l.published_at || null,
     content: l.content || l.description || null,
     media: l.media,
     mediaManifest: l.media_manifest,
@@ -317,7 +323,7 @@ function StandardPostCard({
     isLoggedIn,
   });
 
-  // 2. Specs Row: Giá thuê/Ngân sách + Giới tính + Diện tích + Vào ở/Ngày đăng
+  // 2. Specs Row: Giá thuê/Ngân sách + Subtitle + Diện tích + Ngày / Thời gian
   const priceVal = post.price && post.price > 0 ? post.price : null;
   const minB = post.budgetMin ?? 0;
   const maxB = post.budgetMax ?? 0;
@@ -332,24 +338,11 @@ function StandardPostCard({
     priceStr = `> ${formatVND(minB)}/người`;
   }
 
-  const genderPrefLower = (post.genderPref || '').toLowerCase();
-  const genderText =
-    genderPrefLower === 'male' || genderPrefLower === 'nam'
-      ? 'Nam'
-      : genderPrefLower === 'female' || genderPrefLower === 'nữ' || genderPrefLower === 'nu'
-      ? 'Nữ'
-      : genderPrefLower === 'any' || genderPrefLower === 'both' || genderPrefLower === 'nam/nữ'
-      ? 'Nam/Nữ'
-      : post.genderPref || null;
-
+  const subtitle = post.subtitle || null;
   const areaVal = post.area && post.area > 0 ? post.area : null;
   const displayDate = formatDDMM(post.publishedAt || post.createdAt);
   const formattedMoveIn = formatDDMM(post.moveInDate);
-  const dateSpec = formattedMoveIn
-    ? `Vào ở: ${formattedMoveIn}`
-    : displayDate
-    ? displayDate
-    : null;
+  const dateSpec = post.dateRange || displayDate || formattedMoveIn || null;
 
   // 4. Media
   const postMedia = useMemo(() => {
@@ -366,21 +359,23 @@ function StandardPostCard({
         isHighlighted ? 'bg-primary/5 ring-1 ring-tertiary/40 rounded-sm' : ''
       }`}
     >
-      {/* Line 1: Nguồn / Liên hệ */}
-      <div className="w-full flex items-center justify-between gap-2">
-        <ContactDisclosure
-          info={contactData}
-          buildingId={post.buildingId || undefined}
-          postId={post.shortId || post.id}
-          sourceType={post.sourceType}
-          onRequireAuth={onRequireAuth}
-          onConvertedOutbound={onConvertedOutbound}
-        />
-        <AdminHideButton postId={post.shortId || post.id} />
-      </div>
+      {/* Line 1: Links */}
+      {post.sourceUrl && (
+        <div className="w-full flex items-center justify-between gap-2 pt-0.5">
+          <a
+            href={post.sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => onConvertedOutbound?.()}
+            className="text-primary hover:text-tertiary font-semibold text-xs sm:text-sm underline underline-offset-4 decoration-secondary/40 hover:decoration-tertiary transition-colors break-words"
+          >
+            {post.linkText || post.sourceUrl.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+          </a>
+        </div>
+      )}
 
-      {/* Line 2: Giá thuê/Ngân sách + Giới tính + Diện tích + Vào ở/Ngày đăng */}
-      {(priceStr || genderText || areaVal || dateSpec || (isReview && post.rating)) && (
+      {/* Line 2: Giá thuê/Ngân sách + Subtitle + Diện tích + Ngày */}
+      {(priceStr || subtitle || areaVal || dateSpec || (isReview && post.rating)) && (
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm font-sans text-primary">
           {priceStr && (
             <div className="flex items-center gap-1.5">
@@ -415,10 +410,9 @@ function StandardPostCard({
             </div>
           )}
 
-          {genderText && (
-            <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-secondary">Giới tính:</span>
-              <span className="font-medium text-primary">{genderText}</span>
+          {subtitle && (
+            <div className="flex items-center gap-1.5 text-secondary font-medium">
+              <span>{subtitle}</span>
             </div>
           )}
 
@@ -441,7 +435,7 @@ function StandardPostCard({
           */}
 
           {dateSpec && (
-            <div className="flex items-center gap-1 text-secondary ml-auto text-xs sm:text-sm">
+            <div className="flex items-center gap-1 text-tertiary font-bold font-space-grotesk ml-auto text-xs sm:text-sm whitespace-nowrap">
               <span>{dateSpec}</span>
             </div>
           )}
@@ -1043,10 +1037,7 @@ export default function PostDetailPane({
 
         {/* Header */}
         <header ref={headerRef} className="sticky top-0 z-20 bg-surface border-b border-secondary/20 shadow-xs w-full">
-          <div className="w-full flex justify-center pt-2.5 pb-1.5 cursor-grab active:cursor-grabbing touch-none" {...dragHandleProps}>
-            <div className="w-12 h-1.5 bg-secondary/40 hover:bg-secondary/70 rounded-full transition-colors" />
-          </div>
-          <div className="px-4 pb-3 flex items-start justify-between gap-3">
+          <div className="px-4 py-3 flex items-start justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <h1 className="text-lg md:text-xl font-bold text-primary leading-snug flex-1 min-w-0">
                 {addressTitle || 'Tìm người ở ghép'}
@@ -1098,12 +1089,9 @@ export default function PostDetailPane({
       <div ref={paneRef} className={`relative flex flex-col bg-surface text-primary ${className}`}>
         <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
 
-        {/* Sticky Pinned Header with Drag Handle */}
+        {/* Sticky Pinned Header */}
         <header ref={headerRef} className="sticky top-0 z-20 bg-surface border-b border-secondary/20 shadow-xs w-full">
-          <div className="w-full flex justify-center pt-2.5 pb-1.5 cursor-grab active:cursor-grabbing touch-none" {...dragHandleProps}>
-            <div className="w-12 h-1.5 bg-secondary/40 hover:bg-secondary/70 rounded-full transition-colors" />
-          </div>
-          <div className="px-4 pb-3 flex items-start justify-between gap-3">
+          <div className="px-4 py-3 flex items-start justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <h1 className="text-lg md:text-xl font-bold text-primary leading-snug flex-1 min-w-0">
                 {addressTitle || 'Chi tiết bài đăng'}
@@ -1150,10 +1138,7 @@ export default function PostDetailPane({
 
       {/* Header */}
       <header ref={headerRef} className="sticky top-0 z-20 bg-surface border-b border-secondary/20 shadow-xs w-full">
-        <div className="w-full flex justify-center pt-2.5 pb-1.5 cursor-grab active:cursor-grabbing touch-none" {...dragHandleProps}>
-          <div className="w-12 h-1.5 bg-secondary/40 hover:bg-secondary/70 rounded-full transition-colors" />
-        </div>
-        <div className="px-4 pb-3 flex items-start justify-between gap-3">
+        <div className="px-4 py-3 flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <h1 className="text-lg md:text-xl font-bold text-primary leading-snug flex-1 min-w-0">
               {addressTitle || 'Địa chỉ'}

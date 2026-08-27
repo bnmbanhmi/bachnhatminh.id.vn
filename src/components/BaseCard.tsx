@@ -144,31 +144,7 @@ export default function BaseCard({
       <article className={`border-b border-secondary/25 px-4 py-6 text-left md:px-6 ${className}`}>
         <div className="flex items-start justify-between gap-3">
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-            {formattedTitle && href ? (
-              <a
-                href={href}
-                target={externalHref ? '_blank' : undefined}
-                rel={externalHref ? 'noopener noreferrer' : undefined}
-                className="inline-flex items-center gap-1.5 min-w-0 text-base font-bold text-tertiary hover:underline sm:text-lg"
-              >
-                <span>{formattedTitle}</span>
-                {externalHref && (
-                  <svg
-                    className="w-4 h-4 shrink-0 stroke-current text-tertiary"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                    />
-                  </svg>
-                )}
-              </a>
-            ) : formattedTitle ? (
+            {formattedTitle ? (
               <h2 className="min-w-0 text-base font-bold text-primary sm:text-lg">{formattedTitle}</h2>
             ) : null}
           </div>
@@ -310,25 +286,7 @@ export default function BaseCard({
           <div className="flex items-center justify-between gap-2 mb-1">
             {formattedTitle && (
               <h2 className="font-bold text-xs sm:text-sm text-primary line-clamp-1 min-w-0 flex-1">
-                {href ? (
-                  <a
-                    href={href}
-                    target={href.startsWith('http') ? '_blank' : undefined}
-                    rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                    className="hover:text-tertiary hover:underline transition-colors block truncate"
-                    onClick={(e) => {
-                      if (!href.startsWith('http')) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        router.push(href);
-                      }
-                    }}
-                  >
-                    {formattedTitle}
-                  </a>
-                ) : (
-                  formattedTitle
-                )}
+                {formattedTitle}
               </h2>
             )}
             <div className="flex items-center gap-1.5 shrink-0">
