@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" fill="none">
+  <rect width="512" height="512" rx="128" fill="#F7F5F2"/>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&amp;display=swap');
+    .title {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 700;
+      font-size: 68px;
+      letter-spacing: -0.03em;
+      fill: #1A1C1E;
+    }
+    .sub {
+      font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 700;
+      font-size: 38px;
+      letter-spacing: 0.01em;
+      fill: #B8422E;
+    }
+  </style>
+  <g text-anchor="end">
+    <text x="472" y="270" class="title">nhàminhbach</text>
+    <text x="472" y="306" class="sub">•com</text>
+  </g>
+</svg>

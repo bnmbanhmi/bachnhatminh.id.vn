@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Lexend, Space_Grotesk } from "next/font/google";
+import { Public_Sans, Space_Grotesk } from "next/font/google";
+import { PostHogProvider } from "./providers";
 import "./globals.css";
 
-const lexend = Lexend({
-  variable: "--font-lexend",
+const publicSans = Public_Sans({
+  variable: "--font-public-sans",
   subsets: ["latin", "vietnamese"],
-  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -46,10 +46,10 @@ export default function RootLayout({
   return (
     <html
       lang="vi"
-      className={`${lexend.variable} ${spaceGrotesk.variable} scroll-smooth`}
+      className={`${publicSans.variable} ${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-screen flex flex-col selection:bg-[#FFE5D9] selection:text-[#B3543D]">
-        {children}
+      <body className="min-h-full flex flex-col bg-neutral text-primary">
+        <PostHogProvider>{children}</PostHogProvider>
       </body>
     </html>
   );
