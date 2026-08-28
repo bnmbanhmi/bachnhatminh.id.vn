@@ -109,7 +109,7 @@ function BuildingSearchTabContent({
                   initialTab="all"
                   highlightPostId={selectedPostId || undefined}
                   onClose={() => handleSelectBuilding(null)}
-                  className="pb-10"
+                  className="h-full"
                 />
               </BottomSheet>
             </div>

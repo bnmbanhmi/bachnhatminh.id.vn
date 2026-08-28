@@ -68,7 +68,7 @@ export default function PostDetailPane({
   return (
     <div className={`relative flex flex-col h-full overflow-hidden bg-surface text-primary ${className}`}>
       {/* Scrollable Article Content Container */}
-      <article className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-6 p-4 sm:p-6 lg:p-8 pb-12">
+      <article className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-6 p-4 sm:p-6 lg:p-8 pb-6">
         {/* Editorial Article Header (Title + Cohesive Byline) */}
         <header className="flex flex-col gap-2 pb-4 border-b border-secondary/15">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary tracking-tight leading-tight">
