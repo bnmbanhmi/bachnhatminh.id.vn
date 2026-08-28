@@ -99,3 +99,13 @@ body {
   letter-spacing: 0.1em;
   line-height: 1;
 }
+
+/* Handwriting SVG Styles */
+.name-path {
+  fill: none;
+  stroke: var(--color-tertiary, #B8422E);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+

@@ -28,40 +28,38 @@ export interface ArticleContent {
 
 export const PORTFOLIO_LISTINGS: Listing[] = [
   // ==========================================
-  // TAB 1: ABOUT ME
+  // TAB 1: OVERVIEW
   // ==========================================
   {
     id: 'about-me',
     short_id: 'about-me',
-    title: 'Bạch Nhật Minh',
+    title: 'About me',
     price: 0,
-    published_at: 'Ho Chi Minh City, Vietnam',
-    date_range: 'Ho Chi Minh City, Vietnam',
-    created_at: 'Ho Chi Minh City, Vietnam',
+    published_at: '2022 – Present',
+    date_range: '2022 – Present',
+    created_at: '2022 – Present',
     post_type: 'about',
+    specs: ['Product Builder'],
     description:
-      'Product Designer & AI Engineer bridging human mental models, dense information architecture, and autonomous AI systems.',
+      'Product Builder bridging human mental models, dense information architecture, and autonomous AI systems.',
     content:
-      'Product Designer & AI Engineer bridging human mental models, dense information architecture, and autonomous AI systems.',
+      'Product Builder bridging human mental models, dense information architecture, and autonomous AI systems.',
     extracted_data: {
-      subtitle: 'Product Designer & AI Engineer',
-      date_range: 'Ho Chi Minh City, Vietnam',
-      address_raw: 'Bạch Nhật Minh',
+      subtitle: 'Product Builder',
+      specs: ['Product Builder'],
+      date_range: '2022 – Present',
+      address_raw: 'About me',
     },
     buildings: {
-      address_text: 'Bạch Nhật Minh',
-      street_text: 'Product Designer & AI Engineer',
+      address_text: 'About me',
+      street_text: 'Product Builder',
     },
     article: {
-      tagline:
-        'Product Designer & AI Engineer bridging human mental models, dense information architecture, and autonomous AI systems.',
-      callout:
-        'Product Designer & AI Engineer bridging human mental models, dense information architecture, and autonomous AI systems.',
       sections: [
         {
           sectionTitle: 'Who I Am',
           paragraphs: [
-            'I am a Product Designer and AI Engineer with a background in Data Science & Artificial Intelligence from Hanoi University of Science and Technology (HUST).',
+            'I am a Product Builder with a background in Data Science & Artificial Intelligence from Hanoi University of Science and Technology (HUST).',
             'I specialize in 0-to-1 product discovery, high-velocity frontend shipping (Next.js, React, Tailwind CSS), and designing deterministic AI agent workflows that bridge cognitive load and user intent.',
           ],
         },
@@ -77,7 +75,6 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
           sectionTitle: 'Core Capabilities',
           listItems: [
             'UI/UX Architecture & Cognitive Load Reduction',
-            'PostHog & Telemetry Funnel Optimization',
             'Next.js, React, TypeScript, Tailwind CSS Frontend Execution',
             'LLM Context Routing & Autonomous Agent Orchestration',
             'Data Science & Multi-modal Deep Learning (PyTorch, Computer Vision)',
@@ -86,15 +83,15 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
         {
           sectionTitle: 'Location & Working Style',
           paragraphs: [
-            'Based in Ho Chi Minh City, Vietnam. Available for hybrid collaboration and pair programming sessions at Workflow Thao Dien.',
+            'Based in Hanoi / Ho Chi Minh City (HCMC). Open to onsite and hybrid collaboration, async-first workflows, and direct iterative pair programming.',
             'Async-first, written-first documentation, and a culture of radical candor and direct iterative feedback.',
           ],
         },
         {
           sectionTitle: 'Education',
           listItems: [
-            'Hanoi University of Science and Technology (2022 – 2026) — B.S. in Data Science and AI, School of Information and Communication Technology (SoICT). Graduation Thesis on coding agent context routing (coretext).',
-            'Hanoi – Amsterdam High School for the Gifted (2019 – 2022) — High School Diploma, Specialized in Mathematics.',
+            'Hanoi University of Science and Technology (2022 – 2026) | B.S. in Data Science and AI, SoICT (Graduation Thesis on coding agent context routing)',
+            'Hanoi – Amsterdam High School for the Gifted (2019 – 2022) | High School Diploma, Mathematics',
           ],
         },
         {
@@ -103,6 +100,92 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
             'GitHub: github.com/bnmbanhmi',
             'LinkedIn: linkedin.com/in/bachnhatminh',
             'Email: bach.n.minh@gmail.com',
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 'essay-context-routing',
+    short_id: 'essay-context-routing',
+    title: 'Deterministic Context Routing for AI Agents',
+    price: 0,
+    published_at: 'Aug 2026',
+    date_range: 'Aug 2026',
+    created_at: 'Aug 2026',
+    post_type: 'about',
+    specs: ['Architecture Note', 'coretext'],
+    description:
+      'Why vector embeddings fail on complex software topologies, and how declarative file manifests eliminate LLM hallucination.',
+    content:
+      'Why vector embeddings fail on complex software topologies, and how declarative file manifests eliminate LLM hallucination.',
+    extracted_data: {
+      subtitle: 'Architecture Note',
+      specs: ['Architecture Note', 'coretext'],
+      date_range: 'Aug 2026',
+      address_raw: 'Architecture Note',
+    },
+    buildings: {
+      address_text: 'Architecture Note',
+      street_text: 'Architecture Note',
+    },
+    article: {
+      sections: [
+        {
+          sectionTitle: 'The Embedding Illusion in Code Intelligence',
+          paragraphs: [
+            'RAG approaches that rely purely on semantic vector chunking often fail when applied to software codebases. Semantic similarity does not equal topological relevance in layered architectures.',
+            'When an autonomous agent attempts a refactor, it needs precise boundary definitions, subtree mappings, and declarative operational constraints rather than 20 probabilistic code snippets.',
+          ],
+        },
+        {
+          sectionTitle: 'File-Native Routing Manifesto',
+          listItems: [
+            'Hierarchical attention fences — Giving subagents explicit bounding boxes prevents context window pollution.',
+            'Deterministic token manifests — Structured manifest files act as indices that agents parse with zero ambiguity.',
+            'Subtree synchronization rules — Isolating local workspaces ensures safe bidirectional editing across distributed repositories.',
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: 'essay-glance-tokens',
+    short_id: 'essay-glance-tokens',
+    title: 'Glance Tokens & Master-Detail UX',
+    price: 0,
+    published_at: 'July 2026',
+    date_range: 'July 2026',
+    created_at: 'July 2026',
+    post_type: 'about',
+    specs: ['Design Philosophy', 'nhaminhbach'],
+    description:
+      'Structuring split-view viewports with standardized badges, URL-serialized state, and cognitive load reduction.',
+    content:
+      'Structuring split-view viewports with standardized badges, URL-serialized state, and cognitive load reduction.',
+    extracted_data: {
+      subtitle: 'Design Philosophy',
+      specs: ['Design Philosophy', 'nhaminhbach'],
+      date_range: 'July 2026',
+      address_raw: 'Design Philosophy',
+    },
+    buildings: {
+      address_text: 'Design Philosophy',
+      street_text: 'Design Philosophy',
+    },
+    article: {
+      sections: [
+        {
+          sectionTitle: 'Eliminating Scanning Friction',
+          paragraphs: [
+            'In dense information feeds, users do not read full paragraphs before deciding whether to inspect an item. They scan for reliable, predictable glance tokens.',
+            'Replacing freeform prose headers with standardized badge slots (price, date, status, role) dramatically lowers scanning latency and cognitive fatigue.',
+          ],
+        },
+        {
+          sectionTitle: 'Split-Screen State Synchronization',
+          paragraphs: [
+            'A master-detail split-view must feel deterministic. By serializing active inspection state directly into URL parameters, every view becomes shareable and recoverable with zero layout shifts.',
           ],
         },
       ],
@@ -117,10 +200,11 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     short_id: 'nhaminhbach',
     title: 'nhaminhbach.com',
     price: 0,
-    published_at: 'July 2026 – Present',
+    published_at: '2026 – Present',
     date_range: 'July 2026 – Present',
     created_at: 'July 2026 – Present',
     post_type: 'products',
+    specs: ['Solo 0-to-1 Product', 'nhaminhbach.com'],
     source_url: 'https://nhaminhbach.com',
     link_text: 'nhaminhbach.com (Live Platform)',
     description:
@@ -128,7 +212,8 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     content:
       'Map-based rental discovery platform transforming unstructured social housing posts into verified spatial listings.',
     extracted_data: {
-      subtitle: 'Solo 0-to-1 product',
+      subtitle: 'Solo 0-to-1 Product',
+      specs: ['Solo 0-to-1 Product', 'nhaminhbach.com'],
       date_range: 'July 2026 – Present',
       address_raw: 'nhaminhbach.com',
       link_text: 'nhaminhbach.com (Live Platform)',
@@ -136,7 +221,7 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     },
     buildings: {
       address_text: 'nhaminhbach.com',
-      street_text: 'Solo 0-to-1 product',
+      street_text: 'Solo 0-to-1 Product',
     },
     article: {
       sections: [
@@ -176,22 +261,24 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     short_id: 'coretext',
     title: 'coretext',
     price: 0,
-    published_at: 'Oct 2025 – July 2026',
+    published_at: '2025 – 2026',
     date_range: 'Oct 2025 – July 2026',
     created_at: 'Oct 2025 – July 2026',
     post_type: 'products',
+    specs: ['Graduation Thesis', 'HUST'],
     description:
       'Deterministic context routing framework and file-native discovery protocols designed for autonomous coding agents.',
     content:
       'Deterministic context routing framework and file-native discovery protocols designed for autonomous coding agents.',
     extracted_data: {
-      subtitle: '🎓 Graduation Thesis — HUST',
+      subtitle: 'Graduation Thesis',
+      specs: ['Graduation Thesis', 'HUST'],
       date_range: 'Oct 2025 – July 2026',
       address_raw: 'coretext',
     },
     buildings: {
       address_text: 'coretext',
-      street_text: '🎓 Graduation Thesis — HUST',
+      street_text: 'Graduation Thesis',
     },
     article: {
       sections: [
@@ -223,10 +310,11 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     short_id: 'seekwell',
     title: 'SeekWell',
     price: 0,
-    published_at: 'Oct 2025',
+    published_at: '2025',
     date_range: 'Oct 2025',
     created_at: 'Oct 2025',
     post_type: 'products',
+    specs: ['National Champion', 'ASEAN Data Science Explorers'],
     source_url:
       'https://news.laodong.vn/ldt/thi-truong/diem-nhan-tu-cuoc-thi-kham-pha-khoa-hoc-du-lieu-asean-2025-1600914.ldo',
     link_text: 'Lao Động Newspaper coverage',
@@ -235,7 +323,8 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     content:
       'AI clinical screening ecosystem democratizing early skin lesion risk detection for outdoor workers using Vision Transformers.',
     extracted_data: {
-      subtitle: '🏆 National Champion — ASEAN Data Science Explorers',
+      subtitle: 'National Champion',
+      specs: ['National Champion', 'ASEAN Data Science Explorers'],
       date_range: 'Oct 2025',
       address_raw: 'SeekWell',
       link_text: 'Lao Động Newspaper coverage',
@@ -244,7 +333,7 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     },
     buildings: {
       address_text: 'SeekWell',
-      street_text: '🏆 National Champion — ASEAN Data Science Explorers',
+      street_text: 'National Champion',
     },
     article: {
       sections: [
@@ -282,10 +371,11 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     short_id: 'etraffic',
     title: 'eTraffic',
     price: 0,
-    published_at: 'Nov 2024',
+    published_at: '2024',
     date_range: 'Nov 2024',
     created_at: 'Nov 2024',
     post_type: 'products',
+    specs: ['Runner-up', 'National Traffic Safety Initiative'],
     source_url:
       'https://dantri.com.vn/thoi-su/pgsts-nguyen-phi-le-sang-kien-an-toan-giao-thong-viet-nam-khong-chi-la-mot-cuoc-thi-20241213003519921.htm',
     link_text: 'Post-competition talkshow on Dân trí Newspaper',
@@ -294,7 +384,8 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     content:
       'Intelligent traffic safety data platform aggregating incident reports into real-time risk heat maps and proactive alerts.',
     extracted_data: {
-      subtitle: '🥈 Runner-up — National Traffic Safety Initiative',
+      subtitle: 'Runner-up',
+      specs: ['Runner-up', 'National Traffic Safety Initiative'],
       date_range: 'Nov 2024',
       address_raw: 'eTraffic',
       link_text: 'Post-competition talkshow on Dân trí Newspaper',
@@ -303,7 +394,7 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     },
     buildings: {
       address_text: 'eTraffic',
-      street_text: '🥈 Runner-up — National Traffic Safety Initiative',
+      street_text: 'Runner-up',
     },
     article: {
       sections: [
@@ -338,30 +429,26 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     short_id: 'gdgoc-hust',
     title: 'Google Developer Group on Campus – HUST',
     price: 0,
-    published_at: 'Nov 2022 – Aug 2025',
+    published_at: '2022 – 2025',
     date_range: 'Nov 2022 – Aug 2025',
     created_at: 'Nov 2022 – Aug 2025',
     post_type: 'experience',
-    source_url: 'https://www.facebook.com/gdgoc.hust',
-    link_text: 'GDG on Campus HUST Facebook Page',
+    specs: ['Sub-lead', 'Head of Operations'],
     description:
       'Led developer community initiatives, technical programs, speaker/sponsor relations, and university-wide hackathons.',
     content:
       'Led developer community initiatives, technical programs, speaker/sponsor relations, and university-wide hackathons.',
     extracted_data: {
-      subtitle: 'Sub-lead, Head of Operations',
+      subtitle: 'Sub-lead',
+      specs: ['Sub-lead', 'Head of Operations'],
       date_range: 'Nov 2022 – Aug 2025',
       address_raw: 'Google Developer Group on Campus – HUST',
-      link_text: 'GDG on Campus HUST Facebook Page',
-      contact_info: 'https://www.facebook.com/gdgoc.hust',
     },
     buildings: {
       address_text: 'Google Developer Group on Campus – HUST',
-      street_text: 'Sub-lead, Head of Operations',
+      street_text: 'Sub-lead',
     },
     article: {
-      callout:
-        'Led developer community initiatives, technical programs, speaker/sponsor relations, and university-wide hackathons.',
       sections: [
         {
           sectionTitle: 'Leadership & Operations',
@@ -374,12 +461,6 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
           paragraphs: [
             'Directed major technical events including Google I/O Extended, DevFest, and hands-on developer workshops on Cloud, Flutter, and AI technologies, engaging 500+ student developers.',
           ],
-          sources: [
-            {
-              title: 'Google Developer Group on Campus – HUST Community',
-              url: 'https://www.facebook.com/gdgoc.hust',
-            },
-          ],
         },
       ],
     },
@@ -387,50 +468,40 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
   {
     id: 'bkai-ecgfusion',
     short_id: 'bkai-ecgfusion',
-    title: 'The International Research Center for AI (BK.AI) | HUST',
+    title: 'The International Research Center for AI | HUST',
     price: 0,
-    published_at: 'Oct 2024 – Aug 2025',
+    published_at: '2024 – 2025',
     date_range: 'Oct 2024 – Aug 2025',
     created_at: 'Oct 2024 – Aug 2025',
     post_type: 'experience',
-    source_url: 'https://doi.org/10.1016/j.bspc.2026.110651',
-    link_text: 'BSPC Q1 Journal Publication (DOI: 10.1016/j.bspc.2026.110651)',
+    specs: ['Research Student', 'Bioinformatics Lab'],
     description:
       'Published peer-reviewed research on multi-modal ECG signal deep learning in Biomedical Signal Processing and Control (BSPC, Q1 Journal).',
     content:
       'Published peer-reviewed research on multi-modal ECG signal deep learning in Biomedical Signal Processing and Control (BSPC, Q1 Journal).',
     extracted_data: {
-      subtitle: 'Research Student, Bio-informatics Lab',
+      subtitle: 'Research Student',
+      specs: ['Research Student', 'Bioinformatics Lab'],
       date_range: 'Oct 2024 – Aug 2025',
-      address_raw: 'The International Research Center for AI (BK.AI) | HUST',
-      link_text: 'BSPC Q1 Journal Publication (DOI: 10.1016/j.bspc.2026.110651)',
-      contact_info: 'https://doi.org/10.1016/j.bspc.2026.110651',
+      address_raw: 'The International Research Center for AI | HUST',
     },
     buildings: {
-      address_text: 'The International Research Center for AI (BK.AI) | HUST',
-      street_text: 'Research Student, Bio-informatics Lab',
+      address_text: 'The International Research Center for AI | HUST',
+      street_text: 'Research Student',
     },
     article: {
-      callout:
-        'Published peer-reviewed research on multi-modal ECG signal deep learning in Biomedical Signal Processing and Control (BSPC, Q1 Journal).',
       sections: [
         {
           sectionTitle: 'Research Focus: ECGFusion',
           paragraphs: [
             'Investigated multi-modal deep fusion of raw time-series ECG and spectral representations for automated cardiovascular disease detection.',
-            'ECGFusion: Multi-modal deep fusion of time-series and spectral representations for heart disease detection.',
+            'Published in Biomedical Signal Processing and Control (Elsevier BSPC, Q1 Journal, DOI: 10.1016/j.bspc.2026.110651).',
           ],
         },
         {
           sectionTitle: 'Architecture & Optimization',
           paragraphs: [
             'Conducted comparative studies and optimization of deep ResNet backbones combined with Multi-Head Self-Attention mechanisms and contrastive representation learning.',
-          ],
-          sources: [
-            {
-              title: 'Biomedical Signal Processing and Control (Elsevier BSPC)',
-              url: 'https://doi.org/10.1016/j.bspc.2026.110651',
-            },
           ],
         },
       ],
@@ -441,26 +512,26 @@ export const PORTFOLIO_LISTINGS: Listing[] = [
     short_id: 'ai4life-hust',
     title: 'Institute for AI Innovation & Societal Impact | HUST',
     price: 0,
-    published_at: 'Mar 2025 – Aug 2025',
+    published_at: '2025',
     date_range: 'Mar 2025 – Aug 2025',
     created_at: 'Mar 2025 – Aug 2025',
     post_type: 'experience',
+    specs: ['Research Student', 'AIoT Lab'],
     description:
       'Researched AIoT edge intelligence, lightweight embedded neural networks, and environmental sensory analytics.',
     content:
       'Researched AIoT edge intelligence, lightweight embedded neural networks, and environmental sensory analytics.',
     extracted_data: {
-      subtitle: 'Intern Research Student, AIoT Lab',
+      subtitle: 'Research Student',
+      specs: ['Research Student', 'AIoT Lab'],
       date_range: 'Mar 2025 – Aug 2025',
       address_raw: 'Institute for AI Innovation & Societal Impact | HUST',
     },
     buildings: {
       address_text: 'Institute for AI Innovation & Societal Impact | HUST',
-      street_text: 'Intern Research Student, AIoT Lab',
+      street_text: 'Research Student',
     },
     article: {
-      callout:
-        'Researched AIoT edge intelligence, lightweight embedded neural networks, and environmental sensory analytics.',
       sections: [
         {
           sectionTitle: 'AIoT & Edge Intelligence',

@@ -13,6 +13,7 @@ interface DesktopBounds {
 interface BottomSheetProps {
   snapState?: SnapState;
   onSnapChange?: (state: SnapState) => void;
+  onClose?: () => void;
   children: React.ReactNode;
   headerContent?: React.ReactNode;
   className?: string;
@@ -25,6 +26,7 @@ interface BottomSheetProps {
 export default function BottomSheet({
   snapState: controlledSnapState,
   onSnapChange,
+  onClose,
   children,
   headerContent,
   className = '',
@@ -44,7 +46,15 @@ export default function BottomSheet({
   const isDraggingRef = useRef<boolean>(false);
   const [dragOffset, setDragOffset] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isClosing, setIsClosing] = useState<boolean>(false);
   const [desktopBounds, setDesktopBounds] = useState<DesktopBounds | null>(null);
+
+  const triggerClose = useCallback(() => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose?.();
+    }, 280);
+  }, [onClose]);
 
   const updateBounds = useCallback(() => {
     if (typeof window === 'undefined') return;
@@ -170,21 +180,43 @@ export default function BottomSheet({
     // Fast flick gesture detection
     if (velocity < -0.25) {
       // Swiped UP fast
+      setDragOffset(0);
       updateSnapState('full');
       return;
     } else if (velocity > 0.25) {
       // Swiped DOWN fast
+      if (snapState === 'peek' && onClose) {
+        triggerClose();
+        return;
+      }
+      setDragOffset(0);
       updateSnapState('peek');
       return;
     }
 
-    // Distance-based snapping between peek and full
+    // Distance-based snapping between peek, full, or closing
     const peekH = getHeightForState('peek');
     const fullH = getHeightForState('full');
     const currentBaseHeight = getHeightForState(snapState);
     const targetHeight = currentBaseHeight - deltaY;
-    const midpoint = (peekH + fullH) / 2;
 
+    // If starting from peek and dragged downwards
+    if (snapState === 'peek' && (deltaY > 30 || targetHeight < peekH * 0.85)) {
+      if (onClose) {
+        triggerClose();
+        return;
+      }
+    }
+
+    setDragOffset(0);
+
+    // If it was a quick click/tap without dragging
+    if (Math.abs(deltaY) < 6 && timeElapsed < 300) {
+      updateSnapState(snapState === 'peek' ? 'full' : 'peek');
+      return;
+    }
+
+    const midpoint = (peekH + fullH) / 2;
     if (targetHeight >= midpoint) {
       updateSnapState('full');
     } else {
@@ -204,12 +236,20 @@ export default function BottomSheet({
     setDragOffset(0);
   };
 
+  const peekH = getHeightForState('peek');
+  const fullH = getHeightForState('full');
   const baseHeight = getHeightForState(snapState);
-  const minAllowedHeight = Math.max(120, getHeightForState('peek') - 50);
-  const fullHeight = getHeightForState('full');
-  const dynamicHeight = isDragging
-    ? Math.min(fullHeight + 20, Math.max(minAllowedHeight, baseHeight - dragOffset))
-    : baseHeight;
+
+  const translateY = isClosing
+    ? 'translateY(100%)'
+    : isDragging && snapState === 'peek' && dragOffset > 0
+    ? `translateY(${dragOffset}px)`
+    : 'translateY(0)';
+
+  const dynamicHeight =
+    isDragging && (snapState === 'full' || dragOffset < 0)
+      ? Math.min(fullH + 20, Math.max(peekH, baseHeight - dragOffset))
+      : baseHeight;
 
   const isDesktop = typeof window !== 'undefined' && window.innerWidth >= 1024;
   const desktopStyle = isDesktop && desktopBounds
@@ -228,7 +268,10 @@ export default function BottomSheet({
       data-bottom-sheet="true"
       style={{
         height: `${dynamicHeight}px`,
-        transition: isDragging ? 'none' : 'height 300ms cubic-bezier(0.2, 0.9, 0.3, 1)',
+        transform: translateY,
+        transition: isDragging
+          ? 'none'
+          : 'transform 280ms cubic-bezier(0.32, 0.72, 0, 1), height 280ms cubic-bezier(0.32, 0.72, 0, 1)',
         ...desktopStyle,
       }}
       className={`fixed inset-x-0 bottom-0 z-40 flex flex-col bg-surface border-t border-x border-secondary/30 rounded-t-2xl overflow-hidden shadow-[0_-8px_32px_rgba(0,0,0,0.18)] text-primary max-w-lg mx-auto ${className}`}
@@ -236,13 +279,13 @@ export default function BottomSheet({
       {/* Drag Handle Bar */}
       {showHandle && (
         <div
-          className="w-full flex flex-col items-center pt-2.5 pb-2 cursor-grab active:cursor-grabbing touch-none select-none flex-shrink-0"
+          className="w-full flex flex-col items-center pt-2 pb-1 cursor-grab active:cursor-grabbing touch-none select-none flex-shrink-0"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerCancel={handlePointerCancel}
         >
-          <div className="w-12 h-1.5 bg-secondary/40 hover:bg-secondary/70 rounded-full transition-colors" />
+          <div className="w-10 h-1 bg-secondary/40 hover:bg-secondary/70 rounded-full transition-colors" />
         </div>
       )}
 
@@ -259,10 +302,10 @@ export default function BottomSheet({
         </div>
       )}
 
-      {/* Scrollable Content */}
+      {/* Content Container */}
       <div
         ref={contentRef}
-        className="flex-1 overflow-y-auto select-text"
+        className="flex-1 flex flex-col min-h-0 overflow-hidden select-text"
         style={{
           WebkitOverflowScrolling: 'touch',
           overscrollBehavior: 'contain',

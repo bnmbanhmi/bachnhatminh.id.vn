@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import { PORTFOLIO_LISTINGS, type ArticleContent, type ArticleSection } from '@/lib/portfolio-data';
 import type { Listing } from '@/components/ListingCard';
 
@@ -22,7 +23,6 @@ export interface PostDetailPaneProps {
 export default function PostDetailPane({
   elasticId,
   postId,
-  onClose,
   className = '',
 }: PostDetailPaneProps) {
   const targetId = (postId || elasticId || '').toLowerCase().trim();
@@ -45,10 +45,17 @@ export default function PostDetailPane({
   const article: ArticleContent | null | undefined = item.article;
   const sourceUrl = item.source_url;
   const linkText = item.link_text || (sourceUrl ? sourceUrl.replace(/^https?:\/\//, '').replace(/\/$/, '') : null);
-  const subtitle =
-    (typeof item.extracted_data?.subtitle === 'string' ? item.extracted_data.subtitle : null) ||
-    item.buildings?.street_text ||
-    null;
+  const specs: string[] =
+    (Array.isArray(item.specs) && item.specs.length > 0 ? item.specs : null) ||
+    (Array.isArray(item.extracted_data?.specs) && (item.extracted_data.specs as string[]).length > 0
+      ? (item.extracted_data.specs as string[])
+      : null) ||
+    (typeof item.extracted_data?.subtitle === 'string'
+      ? [item.extracted_data.subtitle]
+      : item.buildings?.street_text
+      ? [item.buildings.street_text]
+      : []);
+
   const dateSpec =
     item.date_range ||
     (typeof item.extracted_data?.date_range === 'string' ? item.extracted_data.date_range : null) ||
@@ -56,79 +63,59 @@ export default function PostDetailPane({
     item.created_at ||
     null;
 
+  const markdownContent = item.content || item.description;
+
   return (
-    <div className={`flex flex-col bg-surface text-primary ${className}`}>
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-20 bg-surface border-b border-secondary/20 shadow-xs w-full">
-        <div className="px-4 py-3 flex items-center justify-between gap-3">
-          <h1 className="text-lg md:text-xl font-bold text-primary tracking-tight leading-snug flex-1 min-w-0 truncate">
+    <div className={`relative flex flex-col h-full overflow-hidden bg-surface text-primary ${className}`}>
+      {/* Scrollable Article Content Container */}
+      <article className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-6 p-4 sm:p-6 lg:p-8 pb-12">
+        {/* Editorial Article Header (Title + Cohesive Byline) */}
+        <header className="flex flex-col gap-2 pb-4 border-b border-secondary/15">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-primary tracking-tight leading-tight">
             {item.title}
           </h1>
-          {onClose && (
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              className="p-1 rounded-md text-secondary hover:text-primary hover:bg-neutral transition-colors cursor-pointer shrink-0"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          )}
-        </div>
-      </header>
 
-      {/* Article Content Container */}
-      <article className="flex flex-col gap-5 p-4 sm:p-6">
-        {/* Outbound Link & Metadata Row */}
-        {(sourceUrl || subtitle || dateSpec) && (
-          <div className="flex flex-col gap-2 pb-3 border-b border-secondary/15">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-secondary font-medium flex-wrap">
+            {specs.map((sp, sIdx) => (
+              <React.Fragment key={sIdx}>
+                {sIdx > 0 && <span className="text-secondary/40">•</span>}
+                <span className="text-primary font-semibold">{sp}</span>
+              </React.Fragment>
+            ))}
+            {dateSpec && (
+              <>
+                {specs.length > 0 && <span className="text-secondary/40">•</span>}
+                <span className="text-tertiary font-bold font-space-grotesk">{dateSpec}</span>
+              </>
+            )}
             {sourceUrl && (
-              <div className="w-full flex items-center justify-between gap-2">
+              <>
+                <span className="text-secondary/40">•</span>
                 <a
                   href={sourceUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary hover:text-tertiary font-semibold text-xs sm:text-sm underline underline-offset-4 decoration-secondary/40 hover:decoration-tertiary inline-flex items-center gap-1.5 transition-colors break-words"
+                  className="text-primary hover:text-tertiary font-semibold underline underline-offset-4 decoration-secondary/40 hover:decoration-tertiary inline-flex items-center gap-1 transition-colors"
                 >
                   <span>{linkText}</span>
-                  <svg className="w-3.5 h-3.5 shrink-0 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
+                  <svg className="w-3.5 h-3.5 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                   </svg>
                 </a>
-              </div>
-            )}
-            {(subtitle || dateSpec) && (
-              <div className="flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm font-sans">
-                {subtitle && <span className="text-secondary font-medium">{subtitle}</span>}
-                {dateSpec && <span className="text-tertiary font-bold font-space-grotesk ml-auto">{dateSpec}</span>}
-              </div>
+              </>
             )}
           </div>
-        )}
+        </header>
 
-        {/* Structured Article or Flat Content */}
+        {/* Structured Article or Markdown Content */}
         {article ? (
           <div className="flex flex-col gap-6 text-sm text-primary leading-relaxed">
-            {article.tagline && (
-              <p className="text-sm sm:text-base font-medium text-primary/90 leading-relaxed italic border-l-2 border-tertiary pl-3 py-0.5">
-                {article.tagline}
-              </p>
-            )}
-
             {article.sections && article.sections.map((sec: ArticleSection, sIdx: number) => (
               <section key={sIdx} className="flex flex-col gap-2.5">
                 {sec.sectionTitle && (
-                  <h2 className="text-xs sm:text-sm font-bold uppercase tracking-wider text-secondary font-space-grotesk">
+                  <h2 className="text-sm sm:text-base font-bold text-primary tracking-tight font-sans">
                     {sec.sectionTitle}
                   </h2>
-                )}
-
-                {sec.callout && (
-                  <p className="text-xs sm:text-sm font-medium text-primary bg-neutral/80 p-2.5 rounded-md border border-secondary/20">
-                    {sec.callout}
-                  </p>
                 )}
 
                 {sec.paragraphs && sec.paragraphs.map((p: string, pIdx: number) => (
@@ -181,9 +168,69 @@ export default function PostDetailPane({
               </section>
             ))}
           </div>
+        ) : markdownContent ? (
+          <div className="flex flex-col gap-4 text-xs sm:text-sm text-primary/90 leading-relaxed">
+            <ReactMarkdown
+              components={{
+                h1: ({ children }) => (
+                  <h1 className="text-base sm:text-lg font-bold text-primary tracking-tight mt-4 mb-1">
+                    {children}
+                  </h1>
+                ),
+                h2: ({ children }) => (
+                  <h2 className="text-sm sm:text-base font-bold text-primary tracking-tight mt-4 mb-1">
+                    {children}
+                  </h2>
+                ),
+                h3: ({ children }) => (
+                  <h3 className="text-xs sm:text-sm font-bold text-primary tracking-tight mt-3 mb-1">
+                    {children}
+                  </h3>
+                ),
+                p: ({ children }) => (
+                  <p className="text-xs sm:text-sm text-primary/90 leading-relaxed my-1">
+                    {children}
+                  </p>
+                ),
+                ul: ({ children }) => (
+                  <ul className="list-disc list-inside space-y-1.5 text-xs sm:text-sm text-primary/90 pl-1 my-2">
+                    {children}
+                  </ul>
+                ),
+                ol: ({ children }) => (
+                  <ol className="list-decimal list-inside space-y-1.5 text-xs sm:text-sm text-primary/90 pl-1 my-2">
+                    {children}
+                  </ol>
+                ),
+                li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                blockquote: ({ children }) => (
+                  <blockquote className="border-l-2 border-tertiary pl-3 italic my-2 text-secondary">
+                    {children}
+                  </blockquote>
+                ),
+                code: ({ children }) => (
+                  <code className="bg-neutral px-1.5 py-0.5 rounded text-tertiary font-mono text-[11px] sm:text-xs">
+                    {children}
+                  </code>
+                ),
+                a: ({ href, children }) => (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-tertiary hover:underline font-medium"
+                  >
+                    {children}
+                  </a>
+                ),
+              }}
+            >
+              {markdownContent}
+            </ReactMarkdown>
+          </div>
         ) : (
           <div className="text-xs sm:text-sm text-primary/90 leading-relaxed whitespace-pre-line">
-            {item.content || item.description || 'No detailed content available.'}
+            No detailed content available.
           </div>
         )}
       </article>

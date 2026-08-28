@@ -81,9 +81,9 @@ function BuildingSearchTabContent({
                     title={list.title}
                     className={
                       isExplicitlySelected
-                        ? 'border-primary ring-1 ring-primary/40 bg-surface'
+                        ? 'border-primary bg-surface'
                         : isDefaultSelected
-                        ? 'lg:border-primary lg:ring-1 lg:ring-primary/40 lg:bg-surface'
+                        ? 'lg:border-primary lg:bg-surface'
                         : ''
                     }
                     onSelect={(bId: string, pId?: string) => handleSelectBuilding(bId || list.id, pId || list.id)}
@@ -99,6 +99,7 @@ function BuildingSearchTabContent({
               <BottomSheet
                 snapState={snapState}
                 onSnapChange={(newSnap) => setSnapState(newSnap)}
+                onClose={() => handleSelectBuilding(null)}
                 peekHeight={280}
                 showHandle={true}
               >
@@ -117,7 +118,7 @@ function BuildingSearchTabContent({
 
         {/* Right Column: Desktop Detail Section (No peek or swipe, clean static scrollable pane) */}
         <div className="hidden lg:block lg:col-span-8 relative">
-          <div className="lg:sticky lg:top-20 h-[calc(100dvh-112px)] lg:h-[850px] w-full rounded-md border border-secondary/30 bg-surface overflow-y-auto flex flex-col shadow-xs">
+          <div className="lg:sticky lg:top-20 h-[calc(100dvh-112px)] lg:h-[850px] w-full rounded-md border border-secondary/30 bg-surface overflow-hidden flex flex-col shadow-xs">
             {desktopSelectedId ? (
               <BuildingDetailPane
                 elasticId={desktopSelectedId}
@@ -125,7 +126,7 @@ function BuildingSearchTabContent({
                 initialTab="all"
                 highlightPostId={desktopSelectedId}
                 onClose={() => handleSelectBuilding(null)}
-                className="pb-10"
+                className="h-full"
               />
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-secondary text-xs p-6 gap-2">

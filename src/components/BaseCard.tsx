@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export interface CardFlag {
   text: string;
@@ -104,9 +105,11 @@ export default function BaseCard({
           }
         }
       }}
-      className={`hover:border-primary flex flex-row gap-3 transition-all duration-150 p-3 rounded-xl border border-secondary/40 bg-surface shadow-xs text-left group relative select-none ${
-        isClickable ? 'cursor-pointer' : ''
-      } ${className}`}
+      className={cn(
+        'hover:border-primary flex flex-row gap-3 transition-all duration-150 p-3 rounded-xl border border-secondary/40 bg-surface text-left group relative select-none',
+        isClickable && 'cursor-pointer',
+        className
+      )}
     >
       {/* Main Content Container */}
       <div className="flex-1 flex flex-col justify-between min-w-0 py-0.5">
@@ -114,7 +117,7 @@ export default function BaseCard({
           {/* Header Row: Title & Flags */}
           <div className="flex items-center justify-between gap-2 mb-1">
             {formattedTitle && (
-              <h2 className="font-bold text-xs sm:text-sm text-primary line-clamp-1 min-w-0 flex-1">
+              <h2 className="font-bold text-sm sm:text-base tracking-tight text-primary line-clamp-1 min-w-0 flex-1">
                 {formattedTitle}
               </h2>
             )}
@@ -137,7 +140,7 @@ export default function BaseCard({
           {/* Main Description Body */}
           {children && (
             <div
-              className={`text-xs sm:text-sm text-secondary/90 leading-snug overflow-hidden my-0.5 ${
+              className={`text-xs sm:text-sm text-secondary/85 leading-snug overflow-hidden my-0.5 ${
                 lineClamp === 0 || lineClamp >= 100
                   ? 'whitespace-pre-line'
                   : lineClamp === 2
@@ -156,13 +159,13 @@ export default function BaseCard({
 
         {/* Bottom Row: Specs & Footer Action */}
         {(specParts.length > 0 || footerAction) && (
-          <div className="flex items-center justify-between gap-2 mt-auto pt-1">
+          <div className="flex items-center justify-between gap-2 mt-auto pt-1.5 flex-wrap">
             {specParts.length > 0 && (
-              <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-medium text-secondary truncate min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 text-[11px] sm:text-xs font-semibold text-primary flex-wrap min-w-0 flex-1">
                 {specParts.filter(Boolean).map((part, idx) => (
                   <React.Fragment key={idx}>
-                    {idx > 0 && <span className="text-secondary/60 shrink-0">•</span>}
-                    {typeof part === 'string' ? <span className="truncate">{part}</span> : part}
+                    {idx > 0 && <span className="text-secondary/40 shrink-0">•</span>}
+                    {typeof part === 'string' ? <span>{part}</span> : part}
                   </React.Fragment>
                 ))}
               </div>

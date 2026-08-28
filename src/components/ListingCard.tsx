@@ -27,6 +27,7 @@ export interface Listing {
   contact_info?: string | null;
   published_at?: string | null;
   created_at?: string | null;
+  specs?: string[] | null;
   extracted_data?: Record<string, unknown> | null;
   distanceMeters?: number | null;
   buildings?: {
@@ -86,9 +87,9 @@ export default function ListingCard({
   const rawDesc = listing.content || listing.description || null;
 
   const dateRange =
+    listing.published_at ||
     listing.date_range ||
     (typeof listing.extracted_data?.date_range === 'string' ? listing.extracted_data.date_range : null) ||
-    listing.published_at ||
     listing.created_at;
 
   const subtitle =
@@ -97,7 +98,11 @@ export default function ListingCard({
     null;
 
   const specParts: string[] = [];
-  if (subtitle && subtitle !== listing.title) {
+  if (Array.isArray(listing.specs) && listing.specs.length > 0) {
+    specParts.push(...listing.specs);
+  } else if (Array.isArray(listing.extracted_data?.specs) && (listing.extracted_data.specs as string[]).length > 0) {
+    specParts.push(...(listing.extracted_data.specs as string[]));
+  } else if (subtitle && subtitle !== listing.title) {
     specParts.push(subtitle);
   }
 

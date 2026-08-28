@@ -13,7 +13,7 @@ function getSearchTabOptions(): SegmentedOption[] {
   return [
     {
       key: 'about',
-      label: 'About me',
+      label: 'Overview',
     },
     {
       key: 'products',
@@ -55,13 +55,10 @@ function HomePageContent() {
       <main className="max-w-7xl mx-auto px-4 md:px-6 w-full flex-1 flex flex-col py-6 gap-4">
         {/* Header Title & Clean Search Tabs Switcher */}
         <section className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-normal text-primary tracking-tight">
-              Portfolio
+              Need a Product Builder?
             </h1>
-            <p className="text-xs md:text-sm text-secondary font-sans leading-relaxed">
-              Product Designer & AI Engineer • Based in Ho Chi Minh City, Vietnam (Available for hybrid work at Workflow Thao Dien)
-            </p>
           </div>
           <SegmentedControl
             ariaLabel="Portfolio category"
