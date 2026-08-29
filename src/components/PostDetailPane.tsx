@@ -223,6 +223,23 @@ export default function PostDetailPane({
                     {children}
                   </a>
                 ),
+                img: ({ src, alt }) => (
+                  <figure className="my-4 flex flex-col gap-1.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={src}
+                      alt={alt || ''}
+                      className="w-full rounded-md border border-secondary/20 object-cover shadow-xs"
+                      loading="lazy"
+                    />
+                    {alt && (
+                      <figcaption className="text-[11px] sm:text-xs text-secondary italic text-center">
+                        {alt}
+                      </figcaption>
+                    )}
+                  </figure>
+                ),
+                hr: () => <hr className="border-t border-secondary/20 my-4" />,
               }}
             >
               {markdownContent}
